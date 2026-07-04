@@ -74,8 +74,8 @@ function swapSides() {
     updateActiveSlotHighlight(1, p1ActiveSlot);
     updateActiveSlotHighlight(2, p2ActiveSlot);
 
-    document.getElementById("p1-foul-badge").innerText = p1Fouls > 0 ? `⚠️ (Fouls: ${p1Fouls})` : "";
-    document.getElementById("p2-foul-badge").innerText = p2Fouls > 0 ? `⚠️ (Fouls: ${p2Fouls})` : "";
+    document.getElementById("p1-foul-badge").innerText = p1Fouls > 0 ? `⚠️ (Fouls: 1/2)` : "";
+    document.getElementById("p2-foul-badge").innerText = p2Fouls > 0 ? `⚠️ (Fouls: 1/2)` : "";
 
     updateLogDisplay("🔄 Bladers manually swapped arena sides.");
 }
@@ -100,7 +100,6 @@ function adjustSetsLimit(amount) {
     }
 }
 
-// FIXED: ADJUSTED TIMELINE BACK TO ELIMINATE EARLY "SHOOT" POP UP
 function startCountdown() {
     if(matchIsOver) return;
     
@@ -113,30 +112,24 @@ function startCountdown() {
     const backdrop = document.getElementById('backdrop-layer');
     backdrop.classList.add('active');
 
-    // 0ms -> Vocal track cues "3..."
     executeSequenceTick("3...", "txt-spin");
 
-    // 900ms -> Vocal track cues "2..."
     countdownTimelineTokens.push(setTimeout(() => {
         executeSequenceTick("2...", "txt-spin");
     }, 900));
 
-    // 1750ms -> Vocal track cues "1..."
     countdownTimelineTokens.push(setTimeout(() => {
         executeSequenceTick("1...", "txt-spin");
     }, 1750));
 
-    // 2550ms -> Vocal track punches "GO!"
     countdownTimelineTokens.push(setTimeout(() => {
         executeSequenceTick("GO!", "txt-burst");
     }, 2550));
 
-    // 3050ms -> SHIFTED LATER: Pushed back by 300ms so it lands directly on the voice cue
     countdownTimelineTokens.push(setTimeout(() => {
         executeSequenceTick("SHOOT! ⚡", "txt-victory");
     }, 3050));
 
-    // 4600ms -> EXTENDED VISIBILITY: Retained longer on screen to let the finish animation wrap up gracefully
     countdownTimelineTokens.push(setTimeout(() => {
         backdrop.classList.remove('active');
         el.className = '';
@@ -170,22 +163,24 @@ function recordFoul(playerNum) {
 
     if (playerNum === 1) {
         p1Fouls++;
-        document.getElementById("p1-foul-badge").innerText = `⚠️ (Fouls: ${p1Fouls})`;
         if (p1Fouls === 1) {
+            document.getElementById("p1-foul-badge").innerText = `⚠️ (Fouls: 1/2)`;
             triggerMiddleAnnouncement('foul');
             updateLogDisplay(`⚠️ Caution: ${p1Name} issued a Launch Foul warning.`);
         } else {
-            updateLogDisplay(`🚨 Penalty: ${p1Name} Foul #${p1Fouls}. Point awarded to ${p2Name}.`);
+            // 2nd Strike reached: executes a score sequence which automatically handles the reset process
+            updateLogDisplay(`🚨 Penalty: ${p1Name} consecutive Launch Fault. Point awarded to ${p2Name}.`);
             executeScoreSequence(2, 1, 'Penalty Foul');
         }
     } else {
         p2Fouls++;
-        document.getElementById("p2-foul-badge").innerText = `⚠️ (Fouls: ${p2Fouls})`;
         if (p2Fouls === 1) {
+            document.getElementById("p2-foul-badge").innerText = `⚠️ (Fouls: 1/2)`;
             triggerMiddleAnnouncement('foul');
             updateLogDisplay(`⚠️ Caution: ${p2Name} issued a Launch Foul warning.`);
         } else {
-            updateLogDisplay(`🚨 Penalty: ${p2Name} Foul #${p2Fouls}. Point awarded to ${p1Name}.`);
+            // 2nd Strike reached: executes a score sequence which automatically handles the reset process
+            updateLogDisplay(`🚨 Penalty: ${p2Name} consecutive Launch Fault. Point awarded to ${p1Name}.`);
             executeScoreSequence(1, 1, 'Penalty Foul');
         }
     }
@@ -216,6 +211,12 @@ function executeScoreSequence(player, points, finishType) {
     let p2Name = document.getElementById('p2-name').value;
     let displayElement = document.getElementById(player === 1 ? 'p1-display' : 'p2-display');
     let logDescription = scoreHistory[scoreHistory.length - 1].logText;
+
+    // RULE ENFORCEMENT: Any point scored instantly clears accumulated foul tracks back to 0
+    p1Fouls = 0;
+    p2Fouls = 0;
+    document.getElementById("p1-foul-badge").innerText = "";
+    document.getElementById("p2-foul-badge").innerText = "";
 
     let setAwarded = false, currentWinner = "";
 
@@ -331,8 +332,8 @@ function undoLast() {
         updateActiveSlotHighlight(1, p1ActiveSlot);
         updateActiveSlotHighlight(2, p2ActiveSlot);
 
-        document.getElementById("p1-foul-badge").innerText = p1Fouls > 0 ? `⚠️ (Fouls: ${p1Fouls})` : "";
-        document.getElementById("p2-foul-badge").innerText = p2Fouls > 0 ? `⚠️ (Fouls: ${p2Fouls})` : "";
+        document.getElementById("p1-foul-badge").innerText = p1Fouls > 0 ? `⚠️ (Fouls: 1/2)` : "";
+        document.getElementById("p2-foul-badge").innerText = p2Fouls > 0 ? `⚠️ (Fouls: 1/2)` : "";
         
         const logContainer = document.getElementById('history-log');
         if(logContainer) {
