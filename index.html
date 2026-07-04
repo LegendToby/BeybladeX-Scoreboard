@@ -2,54 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beyblade X Counter</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; overflow-x: hidden; position: relative; min-height: 90vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        .settings-container { display: flex; justify-content: center; gap: 15px; max-width: 500px; margin: 0 auto 20px auto; flex-wrap: wrap; }
-        .settings { background: #1e1e1e; padding: 15px; border-radius: 8px; flex: 1; min-width: 140px; border: 1px solid #333; }
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            background: #121212; 
+            color: white; 
+            padding: 20px 10px; 
+            overflow-x: hidden; 
+            position: relative; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        h1 { font-size: 2.2rem; margin: 5px 0 15px 0; letter-spacing: 1px; }
+        
+        .settings-container { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            width: 100%;
+            max-width: 600px; 
+            margin-bottom: 15px; 
+        }
+        .settings { 
+            background: #1e1e1e; 
+            padding: 12px; 
+            border-radius: 8px; 
+            flex: 1; 
+            font-size: 1rem;
+            border: 1px solid #333; 
+        }
         .settings-control { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; }
-        .btn-small { background: #444; color: white; border: none; padding: 5px 12px; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .btn-small { background: #444; color: white; border: none; padding: 4px 14px; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .btn-small:hover { background: #555; }
-        .limit-display { font-size: 1.5rem; font-weight: bold; color: #00d2d3; min-width: 30px; }
+        .limit-display { font-size: 1.4rem; font-weight: bold; color: #00d2d3; min-width: 25px; }
         
-        .name-input { background: transparent; color: white; border: none; text-align: center; font-size: 1.3rem; font-weight: bold; width: 80%; margin-bottom: 8px; padding-bottom: 4px; transition: border-color 0.2s, box-shadow 0.2s; }
+        #countdown { 
+            background: #2ed573; 
+            font-size: 1.5rem; 
+            padding: 15px 30px; 
+            margin-bottom: 20px; 
+            width: 100%; 
+            max-width: 600px; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            z-index: 1; 
+            position: relative; 
+            box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3); 
+        }
         
+        /* SCOREBOARD GRID */
+        .score-board { 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 20px;
+            width: 100%;
+            max-width: 800px; 
+            margin-bottom: 20px;
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        .player { 
+            border: 2px solid #333; 
+            padding: 25px 15px; 
+            border-radius: 12px; 
+            flex: 1;
+            min-width: 0; 
+            background: #1a1a1a; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3); 
+        }
+        
+        .name-input { 
+            background: transparent; 
+            color: white; 
+            border: none; 
+            text-align: center; 
+            font-size: 1.6rem; 
+            font-weight: bold; 
+            width: 90%; 
+            margin: 0 auto 6px auto;
+            padding-bottom: 4px; 
+        }
         #p1-name { border-bottom: 2px solid #3d3d3d; }
-        #p1-name:focus { border-bottom: 2px solid #ff4757; outline: none; filter: drop-shadow(0 2px 4px rgba(255, 71, 87, 0.4)); }
-        
+        #p1-name:focus { border-bottom: 2px solid #ff4757; outline: none; }
         #p2-name { border-bottom: 2px solid #3d3d3d; }
-        #p2-name:focus { border-bottom: 2px solid #0fbcf9; outline: none; filter: drop-shadow(0 2px 4px rgba(15, 188, 249, 0.4)); }
+        #p2-name:focus { border-bottom: 2px solid #0fbcf9; outline: none; }
 
         .set-display { 
-            font-size: 0.85rem; 
+            font-size: 0.9rem; 
             color: #ffffff; 
             font-weight: 800; 
-            letter-spacing: 1.5px; 
-            margin-bottom: 12px; 
+            letter-spacing: 1px; 
             background: linear-gradient(135deg, #ff4757, #ff6b81); 
-            padding: 6px 16px; 
+            padding: 6px 12px; 
             border-radius: 50px; 
             display: inline-block; 
             align-self: center;
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
             text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .score-board { display: flex; justify-content: space-around; margin: 20px 0; position: relative; z-index: 1; transition: opacity 0.3s; }
-        .player { border: 2px solid #333; padding: 20px; border-radius: 10px; width: 45%; background: #1a1a1a; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .score { font-size: 5rem; font-weight: bold; margin: 5px 0; color: #ffcc00; display: inline-block; }
         
-        .score { font-size: 4rem; font-weight: bold; margin: 5px 0; color: #ffcc00; display: inline-block; }
-        
-        @keyframes scorePop {
-            0% { transform: scale(1); color: #ffcc00; }
-            20% { transform: scale(1.5); color: #2ed573; text-shadow: 0 0 15px #2ed573; }
-            100% { transform: scale(1); color: #ffcc00; }
+        button.action-btn { 
+            color: white; 
+            border: none; 
+            padding: 12px 6px; 
+            font-size: 1.1rem; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            transition: transform 0.1s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .pop { animation: scorePop 0.4s ease-out; }
-        
+        button.action-btn:active { transform: scale(0.96); }
+        button.spin { background: #485460; }
+        button.over { background: #0fbcf9; }
+        button.burst { background: #ffa502; }
+        button.xtreme { background: #9b59b6; box-shadow: 0 0 6px rgba(155, 89, 182, 0.4); } 
+
+        /* LOG AND CONTROLS */
+        .log-heading { margin-top: 15px; color: #a4b0be; letter-spacing: 1px; font-size: 1.1rem; }
+        #history-log { 
+            background: #1e1e1e; 
+            width: 100%;
+            max-width: 600px; 
+            margin: 8px auto 20px auto; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            height: 120px; 
+            overflow-y: auto; 
+            text-align: left;
+        }
+        #empty-log-msg { color: #747d8c; text-align: center; font-style: italic; font-size: 1rem; }
+
+        /* FIXED: Added z-index and position properties so control panel breaks through full screen victory overlays */
+        .control-panel { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            width: 100%; 
+            max-width: 600px; 
+            position: relative; 
+            z-index: 1000; 
+        }
+        .utility-btn { color: white; border: none; padding: 12px 20px; font-size: 1.1rem; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
+        .btn-reset { background: #747d8c; }
+        .btn-undo { background: #e1b12c; }
+
+        /* OVERLAYS AND ANIMATIONS */
         #backdrop-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75); z-index: 998; opacity: 0;
@@ -57,110 +176,126 @@
         }
         #backdrop-layer.active { opacity: 1; }
 
-        @keyframes intenseShake {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(-8px, -5px) rotate(-2deg); }
-            20% { transform: translate(7px, 6px) rotate(3deg); }
-            30% { transform: translate(-6px, 7px) rotate(-1deg); }
-            40% { transform: translate(5px, -6px) rotate(2deg); }
-            50% { transform: translate(-7px, 5px) rotate(-3deg); }
-            60% { transform: translate(6px, -7px) rotate(1deg); }
-            70% { transform: translate(-5px, 6px) rotate(2deg); }
-            80% { transform: translate(7px, 5px) rotate(-2deg); }
-            90% { transform: translate(-6px, -5px) rotate(1deg); }
-        }
-        .shake-active { animation: intenseShake 0.6s ease-in-out; }
-
         #announcement-layer {
-            position: fixed; top: 50%; left: 50%; font-size: 4.5rem; font-weight: 900;
-            text-transform: uppercase; font-style: italic; letter-spacing: 3px;
+            position: fixed; top: 40%; left: 50%; font-size: 3.5rem; font-weight: 900;
+            text-transform: uppercase; font-style: italic; letter-spacing: 1px;
             pointer-events: none; opacity: 0; z-index: 999; white-space: nowrap;
         }
 
+        @keyframes scorePop {
+            0% { transform: scale(1); color: #ffcc00; }
+            20% { transform: scale(1.3); color: #2ed573; text-shadow: 0 0 10px #2ed573; }
+            100% { transform: scale(1); color: #ffcc00; }
+        }
+        .pop { animation: scorePop 0.4s ease-out; }
+
+        @keyframes intenseShake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-4px, -3px) rotate(-1deg); }
+            20% { transform: translate(4px, 3px) rotate(1deg); }
+            30% { transform: translate(-3px, 4px) rotate(0deg); }
+            40% { transform: translate(3px, -3px) rotate(1deg); }
+            50% { transform: translate(-4px, 3px) rotate(-1deg); }
+            60% { transform: translate(3px, -4px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shake-active { animation: intenseShake 0.5s ease-in-out; }
+
+        /* ANIMATION SPEEDS */
         @keyframes spinAnim {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(-360deg); opacity: 0; }
-            15% { transform: translate(-50%, -50%) scale(2) rotate(0deg); opacity: 1; }
-            85% { transform: translate(-50%, -50%) scale(1.8) rotate(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.4) rotate(180deg); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
+            15%, 85% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5) rotate(90deg); opacity: 0; }
         }
         .anim-spin { animation: spinAnim 2.2s ease-in-out forwards; }
 
         @keyframes overAnim {
-            0% { transform: translate(-120%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
-            20% { transform: translate(-50%, -50%) scale(2.2) rotate(0deg); opacity: 1; }
-            85% { transform: translate(-50%, -50%) scale(1.8) rotate(0deg); opacity: 1; }
-            100% { transform: translate(10%, 50%) scale(0.5) rotate(20deg); opacity: 0; }
+            0% { transform: translate(-100%, -100%) scale(0.5); opacity: 0; }
+            20%, 85% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            100% { transform: translate(0%, 0%) scale(0.5); opacity: 0; }
         }
         .anim-over { animation: overAnim 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         @keyframes burstExplode {
-            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; filter: blur(5px); }
-            10% { transform: translate(-50%, -50%) scale(2.5); opacity: 1; filter: blur(0px); }
-            15% { transform: translate(-50%, -50%) scale(2); }
-            50% { transform: translate(-50%, -50%) scale(2.3); letter-spacing: 12px; }
-            85% { transform: translate(-50%, -50%) scale(2); letter-spacing: 2px; opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(4); opacity: 0; filter: blur(10px); letter-spacing: 30px; }
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+            10%, 85% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; filter: blur(5px); }
         }
         .anim-burst { animation: burstExplode 2.2s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
 
         @keyframes xtremeImpact {
-            0% { transform: translate(-50%, -50%) scale(8) rotate(-45deg); opacity: 0; filter: brightness(5); }
-            8% { transform: translate(-50%, -50%) scale(1.8) rotate(5deg); opacity: 1; filter: brightness(2); }
-            12% { transform: translate(-50%, -50%) scale(2.5) rotate(0deg); filter: brightness(1); }
-            30% { transform: translate(-50%, -50%) scale(2.3) skewX(-20deg); }
-            45% { transform: translate(-50%, -50%) scale(2.6) skewX(15deg); }
-            80% { transform: translate(-50%, -50%) scale(2.4) skewX(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(0) rotate(720deg); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+            8%, 80% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
         }
         .anim-xtreme { animation: xtremeImpact 2.2s cubic-bezier(0.15, 1.1, 0.3, 1) forwards; }
 
         @keyframes setCompleteAnim {
             0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-            15% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
-            85% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            15%, 85% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
         }
         .anim-set-complete { animation: setCompleteAnim 3.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         @keyframes victoryAnim {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(-5deg); opacity: 0; }
-            40% { transform: translate(-50%, -50%) scale(1.3) rotate(2deg); opacity: 1; }
-            55% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1.05) rotate(0deg); opacity: 1; }
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(0.9); opacity: 1; }
         }
         .anim-victory { animation: victoryAnim 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        .txt-spin { color: #ffffff; text-shadow: 0 0 20px #7f8c8d, 0 0 40px #ffffff; }
-        .txt-over { color: #0fbcf9; text-shadow: 0 0 25px #0fbcf9, 0 0 50px #00a8ff; }
-        .txt-burst { color: #ffa502; text-shadow: 0 0 20px #ffa502, 0 0 40px #ff7f50, 0 0 60px #ff4757; }
-        .txt-xtreme { color: #ef57ff; text-shadow: 0 0 25px #9b59b6, 0 0 50px #ef57ff, 0 0 80px #6c5ce7; font-weight: 950; }
+        .txt-spin { color: #ffffff; text-shadow: 0 0 10px #7f8c8d, 0 0 20px #ffffff; }
+        .txt-over { color: #0fbcf9; text-shadow: 0 0 15px #0fbcf9, 0 0 30px #00a8ff; }
+        .txt-burst { color: #ffa502; text-shadow: 0 0 15px #ffa502, 0 0 30px #ff7f50; }
+        .txt-xtreme { color: #ef57ff; text-shadow: 0 0 15px #9b59b6, 0 0 30px #ef57ff; font-weight: 950; }
         
-        .txt-set-complete { color: #2ed573; text-shadow: 0 0 25px #2ed573, 0 0 50px #26de81; }
-        .sub-set { font-size: 2rem; color: #ffffff; text-shadow: none; display: block; margin-top: 8px; font-weight: bold; }
+        .txt-set-complete { color: #2ed573; text-shadow: 0 0 15px #2ed573, 0 0 30px #26de81; }
+        .sub-set { font-size: 1.5rem; color: #ffffff; text-shadow: none; display: block; margin-top: 5px; font-weight: bold; }
 
-        .txt-victory { color: #ffdd59; text-shadow: 0 0 30px #ffdd59, 0 0 60px #ffd32a; font-size: 5rem; line-height: 1.1; }
-        .sub-victory { font-size: 2.5rem; color: #ffffff; text-shadow: none; display: block; margin-top: 10px; font-weight: bold; letter-spacing: 1px; }
+        .txt-victory { color: #ffdd59; text-shadow: 0 0 20px #ffdd59, 0 0 40px #ffd32a; font-size: 3.5rem; line-height: 1.2; }
+        .sub-victory { font-size: 1.8rem; color: #ffffff; text-shadow: none; display: block; margin-top: 8px; font-weight: bold; }
 
-        button.action-btn { color: white; border: none; padding: 10px 15px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; transition: transform 0.1s; }
-        button.action-btn:active { transform: scale(0.96); }
-        button.spin { background: #485460; }
-        button.over { background: #0fbcf9; }
-        button.burst { background: #ffa502; }
-        button.xtreme { background: #9b59b6; box-shadow: 0 0 8px rgba(155, 89, 182, 0.6); } 
-        
-        #countdown { background: #2ed573; font-size: 1.5rem; padding: 15px 30px; margin-top: 10px; margin-bottom: 20px; width: 80%; max-width: 400px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; z-index: 1; position: relative; box-shadow: 0 5px 15px rgba(46, 213, 115, 0.4); }
-        
-        .control-panel { display: flex; justify-content: center; gap: 15px; margin-top: 10px; position: relative; z-index: 1000; }
-        .utility-btn { color: white; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-reset { background: #747d8c; }
-        .btn-undo { background: #e1b12c; }
-
+        /* DYNAMIC MOBILE MEDIA QUERY OVERRIDE */
         @media (max-width: 600px) {
-            .score-board { flex-direction: column; gap: 20px; align-items: center; }
-            .player { width: 90%; }
-            #announcement-layer { font-size: 2.5rem; }
-            .txt-victory { font-size: 3rem; }
-            .sub-victory { font-size: 1.5rem; }
+            body { padding: 10px; }
+            h1 { font-size: 1.6rem; margin: 5px 0 10px 0; }
+            
+            .settings-container { gap: 10px; margin-bottom: 10px; }
+            .settings { padding: 8px; font-size: 0.8rem; }
+            .btn-small { padding: 2px 10px; font-size: 1rem; }
+            .limit-display { font-size: 1.1rem; }
+            
+            #countdown { font-size: 1.2rem; padding: 10px 20px; margin-bottom: 15px; }
+            
+            .score-board { gap: 10px; margin-bottom: 15px; }
+            .player { padding: 12px 8px; gap: 6px; }
+            
+            .name-input { font-size: 1.1rem; }
+            .set-display { font-size: 0.7rem; padding: 4px 8px; }
+            .score { font-size: 3rem; margin: 2px 0; }
+            
+            button.action-btn { font-size: 0.8rem; padding: 8px 4px; border-radius: 5px; }
+            
+            .log-heading { font-size: 0.9rem; }
+            #history-log { height: 90px; padding: 8px; margin-bottom: 15px; }
+            #empty-log-msg { font-size: 0.8rem; }
+            
+            .control-panel { gap: 10px; }
+            .utility-btn { padding: 10px 15px; font-size: 0.9rem; }
+            
+            #announcement-layer { font-size: 2.2rem; top: 35%; }
+            .sub-set { font-size: 1.1rem; }
+            .txt-victory { font-size: 2.5rem; }
+            .sub-victory { font-size: 1.3rem; }
+        }
+
+        @media (max-width: 360px) {
+            h1 { font-size: 1.3rem; }
+            .score { font-size: 2.4rem; }
+            button.action-btn { font-size: 0.7rem; padding: 6px 2px; }
+            .name-input { font-size: 0.95rem; }
+            #announcement-layer { font-size: 1.6rem; }
+            .txt-victory { font-size: 1.9rem; }
+            .sub-victory { font-size: 1rem; }
         }
     </style>
 </head>
@@ -173,7 +308,7 @@
     
     <div class="settings-container">
         <div class="settings">
-            <div>Points to Win Set:</div>
+            <div>Points to Set:</div>
             <div class="settings-control">
                 <button class="btn-small" onclick="adjustPointsLimit(-1)">-</button>
                 <span id="limit-display" class="limit-display">4</span>
@@ -182,7 +317,7 @@
         </div>
 
         <div class="settings">
-            <div>Sets to Win Match:</div>
+            <div>Sets to Match:</div>
             <div class="settings-control">
                 <button class="btn-small" onclick="adjustSetsLimit(-1)">-</button>
                 <span id="sets-limit-display" class="limit-display">2</span>
@@ -194,36 +329,34 @@
     <button id="countdown" onclick="startCountdown()">3, 2, 1, Go Shoot!</button>
 
     <div class="score-board" id="main-scoreboard">
-        <!-- Player 1 -->
         <div class="player" id="player-card-1">
             <input type="text" id="p1-name" class="name-input" value="Player 1">
             <div class="set-display">SETS: <span id="p1-sets">0</span></div>
             <div><div class="score" id="p1-display">0</div></div>
-            <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">+1 Spin Finish</button>
-            <button class="action-btn over" onclick="addScore(1, 2, 'over')">+2 Over Finish</button>
-            <button class="action-btn burst" onclick="addScore(1, 2, 'burst')">+2 Burst Finish</button>
-            <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">+3 Xtreme Finish</button>
+            <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">Spin (+1)</button>
+            <button class="action-btn over" onclick="addScore(1, 2, 'over')">Over (+2)</button>
+            <button class="action-btn burst" onclick="addScore(1, 2, 'burst')">Burst (+2)</button>
+            <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">Xtreme (+3)</button>
         </div>
 
-        <!-- Player 2 -->
         <div class="player" id="player-card-2">
             <input type="text" id="p2-name" class="name-input" value="Player 2">
             <div class="set-display">SETS: <span id="p2-sets">0</span></div>
             <div><div class="score" id="p2-display">0</div></div>
-            <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">+1 Spin Finish</button>
-            <button class="action-btn over" onclick="addScore(2, 2, 'over')">+2 Over Finish</button>
-            <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">+2 Burst Finish</button>
-            <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">+3 Xtreme Finish</button>
+            <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">Spin (+1)</button>
+            <button class="action-btn over" onclick="addScore(2, 2, 'over')">Over (+2)</button>
+            <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">Burst (+2)</button>
+            <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">Xtreme (+3)</button>
         </div>
     </div>
 
-    <h3 style="margin-top: 30px; color: #a4b0be; letter-spacing: 1px;">BATTLE LOG</h3>
-    <div id="history-log" style="background: #1e1e1e; max-width: 500px; margin: 0 auto 20px auto; padding: 10px; border-radius: 8px; border: 1px solid #333; max-height: 150px; overflow-y: auto; text-align: left;">
-        <div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>
+    <div class="log-heading">BATTLE LOG</div>
+    <div id="history-log">
+        <div id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>
     </div>
 
     <div class="control-panel">
-        <button class="utility-btn btn-undo" onclick="undoLast()">Undo Last Score</button>
+        <button class="utility-btn btn-undo" onclick="undoLast()">Undo Last</button>
         <button class="utility-btn btn-reset" onclick="resetGame()">Reset Match</button>
     </div>
 
@@ -241,14 +374,11 @@
         let midRoundTimeoutToken = null;
         let victoryTimeoutToken = null;
 
-        const soundChannel = new Audio();
+        let activeAudioTracks = [];
 
         function unlockAudioEngine() {
-            soundChannel.play().then(() => {
-                soundChannel.pause();
-                soundChannel.currentTime = 0;
-            }).catch(e => console.log("Engine unlock context pending."));
-            
+            let contextUnlock = new Audio();
+            contextUnlock.play().catch(e => {});
             window.removeEventListener('mousedown', unlockAudioEngine);
             window.removeEventListener('touchstart', unlockAudioEngine);
         }
@@ -257,18 +387,27 @@
 
         function playCustomSound(fileName) {
             try {
-                soundChannel.pause();
-                soundChannel.src = ''; 
-                soundChannel.load(); 
-                soundChannel.currentTime = 0;
-                soundChannel.src = fileName + '.mp3';
-                let playPromise = soundChannel.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio pipeline blocked."));
-                }
+                let cacheBuster = "?v=" + new Date().getTime();
+                let track = new Audio(fileName + '.mp3' + cacheBuster);
+                activeAudioTracks.push(track);
+                
+                track.play().catch(error => {
+                    console.log("Audio pipeline waiting context:", error);
+                });
+
+                track.onended = () => {
+                    activeAudioTracks = activeAudioTracks.filter(t => t !== track);
+                };
             } catch(e) {
                 console.log("Audio error:", e);
             }
+        }
+
+        function stopAllAudio() {
+            activeAudioTracks.forEach(track => {
+                try { track.pause(); track.currentTime = 0; } catch(e){}
+            });
+            activeAudioTracks = [];
         }
 
         function adjustPointsLimit(amount) {
@@ -281,6 +420,11 @@
             }
         }
 
+        document.getElementById('p1-name').addEventListener('click', (e) => e.stopPropagation());
+        document.getElementById('p2-name').addEventListener('click', (e) => e.stopPropagation());
+        document.getElementById('p1-name').addEventListener('touchstart', (e) => e.stopPropagation());
+        document.getElementById('p2-name').addEventListener('touchstart', (e) => e.stopPropagation());
+
         function adjustSetsLimit(amount) {
             if(matchIsOver || scoreHistory.length > 0) return;
             let newLimit = setsWinLimit + amount;
@@ -290,9 +434,6 @@
                 resetGame();
             }
         }
-
-        document.getElementById('p1-name').addEventListener('click', (e) => e.stopPropagation());
-        document.getElementById('p2-name').addEventListener('click', (e) => e.stopPropagation());
 
         function startCountdown() {
             if(matchIsOver) return;
@@ -308,7 +449,7 @@
 
             let formattedFinish = finishType.charAt(0).toUpperCase() + finishType.slice(1);
             let scorerName = player === 1 ? p1Name : p2Name;
-            let logDescription = `${scorerName} scored +${points} via ${formattedFinish} Finish!`;
+            let logDescription = `${scorerName} scored +${points} [${formattedFinish}]`;
 
             scoreHistory.push({
                 p1Score: p1Score, p2Score: p2Score,
@@ -328,7 +469,7 @@
                     p1Sets += 1;
                     setAwarded = true;
                     currentWinner = p1Name;
-                    logDescription += ` ⭐ ${p1Name} wins the Set!`;
+                    logDescription += ` ⭐ Set ${p1Name}`;
                     scoreHistory[scoreHistory.length - 1].logText = logDescription;
                     if (p1Sets >= setsWinLimit) matchIsOver = true; 
                 }
@@ -341,14 +482,12 @@
                     p2Sets += 1;
                     setAwarded = true;
                     currentWinner = p2Name;
-                    logDescription += ` ⭐ ${p2Name} wins the Set!`;
+                    logDescription += ` ⭐ Set ${p2Name}`;
                     scoreHistory[scoreHistory.length - 1].logText = logDescription;
                     if (p2Sets >= setsWinLimit) matchIsOver = true; 
                 }
             }
 
-            // UPGRADED SEQUENCE: Always show the point finish banner first. 
-            // If a set is won, pass a chain-callback to run the "Set Complete" banner right after.
             if (setAwarded) {
                 triggerMiddleAnnouncement(finishType, () => {
                     triggerSetCompleteAnnouncement(currentWinner);
@@ -371,17 +510,16 @@
         function updateLogDisplay(text) {
             const logContainer = document.getElementById('history-log');
             const emptyMsg = document.getElementById('empty-log-msg');
-            
             if (emptyMsg) emptyMsg.remove();
 
             let roundNumber = scoreHistory.length;
             let logRow = document.createElement('div');
-            logRow.style.padding = '6px 10px';
+            logRow.style.padding = '4px 6px';
             logRow.style.borderBottom = '1px solid #2a2a2a';
-            logRow.style.fontSize = '0.95rem';
+            logRow.style.fontSize = '0.8rem';
             logRow.style.color = text.includes('⭐') ? '#ff4757' : '#ffffff';
             
-            logRow.innerHTML = `<b style="color: #ffcc00;">Round ${roundNumber}:</b> ${text} <span style="float: right; color: #a4b0be; font-weight: bold;">[S:${p1Sets}-${p2Sets} P:${p1Score}-${p2Score}]</span>`;
+            logRow.innerHTML = `<b style="color: #ffcc00;">R${roundNumber}:</b> ${text} <span style="float: right; color: #a4b0be;">[S:${p1Sets}-${p2Sets} P:${p1Score}-${p2Score}]</span>`;
             
             logContainer.appendChild(logRow);
             logContainer.scrollTop = logContainer.scrollHeight;
@@ -392,7 +530,7 @@
             if(midRoundTimeoutToken) { clearTimeout(midRoundTimeoutToken); midRoundTimeoutToken = null; }
 
             matchIsOver = false;
-            soundChannel.pause();
+            stopAllAudio();
             document.getElementById('backdrop-layer').classList.remove('active');
             document.getElementById('announcement-layer').className = '';
             document.getElementById('announcement-layer').innerHTML = '';
@@ -410,7 +548,7 @@
                 logContainer.innerHTML = ''; 
                 
                 if (scoreHistory.length === 0) {
-                    logContainer.innerHTML = `<div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
+                    logContainer.innerHTML = `<div id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
                 } else {
                     let workingHistory = [...scoreHistory];
                     scoreHistory = [];
@@ -418,37 +556,19 @@
                     workingHistory.forEach((snapshot) => {
                         scoreHistory.push(snapshot);
                         let roundRow = document.createElement('div');
-                        roundRow.style.padding = '6px 10px';
+                        roundRow.style.padding = '4px 6px';
                         roundRow.style.borderBottom = '1px solid #2a2a2a';
-                        roundRow.style.fontSize = '0.95rem';
+                        roundRow.style.fontSize = '0.8rem';
                         roundRow.style.color = snapshot.logText.includes('⭐') ? '#ff4757' : '#ffffff';
                         
-                        let checkP1 = snapshot.p1Score;
-                        let checkP2 = snapshot.p2Score;
-                        let checkS1 = snapshot.p1Sets;
-                        let checkS2 = snapshot.p2Sets;
-                        
-                        if (snapshot.logText.includes('wins the Set!')) {
-                            if (snapshot.logText.includes(document.getElementById('p1-name').value)) { checkS1 += 1; } else { checkS2 += 1; }
-                            checkP1 = 0; checkP2 = 0;
-                        } else {
-                            if (snapshot.logText.includes(document.getElementById('p1-name').value)) {
-                                checkP1 += (snapshot.logText.includes('+1') ? 1 : snapshot.logText.includes('+2') ? 2 : 3);
-                            } else {
-                                checkP2 += (snapshot.logText.includes('+1') ? 1 : snapshot.logText.includes('+2') ? 2 : 3);
-                            }
-                        }
-
-                        roundRow.innerHTML = `<b style="color: #ffcc00;">Round ${scoreHistory.length}:</b> ${snapshot.logText} <span style="float: right; color: #a4b0be; font-weight: bold;">[S:${checkS1}-${checkS2} P:${checkP1}-${checkP2}]</span>`;
+                        roundRow.innerHTML = `<b style="color: #ffcc00;">R${scoreHistory.length}:</b> ${snapshot.logText}`;
                         logContainer.appendChild(roundRow);
                     });
-                    logContainer.scrollTop = logContainer.scrollHeight;
                 }
                 updateUI();
             }
         }
 
-        // UPGRADED: Accepts an optional callback to gracefully sequence animations
         function triggerMiddleAnnouncement(type, chainCallback) {
             const backdrop = document.getElementById('backdrop-layer');
             const el = document.getElementById('announcement-layer');
@@ -473,11 +593,7 @@
                 backdrop.classList.remove('active');
                 document.body.classList.remove('shake-active');
                 midRoundTimeoutToken = null;
-                
-                // If there's a subsequent layout banner waiting in line, fire it now
-                if (chainCallback) {
-                    chainCallback();
-                }
+                if (chainCallback) chainCallback();
             }, 2200);
         }
 
@@ -486,7 +602,7 @@
             const el = document.getElementById('announcement-layer');
             
             backdrop.classList.add('active');
-            el.innerHTML = `SET COMPLETE!<span class="sub-set">${setWinner} takes the Set!</span>`;
+            el.innerHTML = `SET COMPLETE!<span class="sub-set">${setWinner} wins set!</span>`;
             el.className = '';
             void el.offsetWidth;
             
@@ -512,7 +628,7 @@
             const el = document.getElementById('announcement-layer');
             
             backdrop.classList.add('active');
-            el.innerHTML = `MATCH OVER!<span class="sub-victory">${winnerName} Wins the Battle!</span>`;
+            el.innerHTML = `MATCH OVER!<span class="sub-victory">${winnerName} Wins!</span>`;
             el.className = '';
             void el.offsetWidth;
             
@@ -531,7 +647,7 @@
             if(midRoundTimeoutToken) { clearTimeout(midRoundTimeoutToken); midRoundTimeoutToken = null; }
 
             matchIsOver = false;
-            soundChannel.pause();
+            stopAllAudio();
             p1Score = 0;
             p2Score = 0;
             p1Sets = 0;
@@ -548,7 +664,7 @@
             document.getElementById('announcement-layer').innerHTML = '';
 
             const logContainer = document.getElementById('history-log');
-            logContainer.innerHTML = `<div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
+            logContainer.innerHTML = `<div id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
         }
     </script>
 </body>
