@@ -5,7 +5,7 @@ const DB_STANDARD_BLADES = [
     "Dran Strike", "Dranzer S", "Ghost Circle", "Golem Rock", "Hells Scythe", 
     "Hells Chain", "Hells Hammer", "Impact Drake", "Knight Shield", "Knight Lance", 
     "Knight Mail", "Leon Claw", "Leon Crest", "Meteor Dragoon", "Mummy Curse", 
-    "Mummy Cluster", "Orochi Cluster", "Phoenix Feather", "Phoenix Wing", "Phoenix Rudder", 
+    "Mummy Curse", "Orochi Cluster", "Phoenix Feather", "Phoenix Wing", "Phoenix Rudder", 
     "Ptera Swing", "Rhino Horn", "Samurai Saber", "Samurai Steel", "Samurai Calibur", 
     "Shark Edge", "Shark Scale", "Shark Gill", "Shinobi Shadow", "Shinobi Knife", 
     "Silver Wolf", "Sphinx Cowl", "Shelter Drake", "Scorpio Spear", "Tricera Press", 
@@ -51,6 +51,14 @@ const DB_BITS = [
 ];
 
 const DB_HYBRID_RATCHET_BITS = ["Op (Operate)", "Tr (Turbo)"];
+
+// 3-BEY CORE REGISTRY MAPPING
+let playerDecks = {
+    1: ["+ Select Bey 1", "+ Select Bey 2", "+ Select Bey 3"],
+    2: ["+ Select Bey 1", "+ Select Bey 2", "+ Select Bey 3"]
+};
+let activeModalPlayer = null; 
+let activeModalSlot = null; 
 
 document.addEventListener("DOMContentLoaded", () => {
     toggleSystemArchitectureLayout("STANDARD");
@@ -167,10 +175,11 @@ function generateOptions(array, splitShorthand = false) {
     }).join('');
 }
 
-function openPartsModal(playerNum) {
+function openPartsModal(playerNum, slotIndex) {
     activeModalPlayer = playerNum;
+    activeModalSlot = slotIndex;
     let currentName = document.getElementById(`p${playerNum}-name`).value;
-    document.getElementById('modal-player-title').innerText = `${currentName}'s Combo`;
+    document.getElementById('modal-player-title').innerText = `${currentName} - Slot ${slotIndex + 1}`;
     
     document.getElementById('backdrop-layer').classList.add('active');
     document.getElementById('parts-modal').classList.add('active');
@@ -180,10 +189,11 @@ function closePartsModal() {
     document.getElementById('backdrop-layer').classList.remove('active');
     document.getElementById('parts-modal').classList.remove('active');
     activeModalPlayer = null;
+    activeModalSlot = null;
 }
 
 function savePartsSelection() {
-    if(!activeModalPlayer) return;
+    if(activeModalPlayer === null || activeModalSlot === null) return;
     
     const system = document.getElementById("select-system").value;
     let isCleared = false;
@@ -211,10 +221,8 @@ function savePartsSelection() {
         }
     }
 
-    let displayBadge = document.getElementById(`p${activeModalPlayer}-combo`);
-
     if (isCleared) {
-        displayBadge.innerText = "+ Select Combo";
+        playerDecks[activeModalPlayer][activeModalSlot] = `+ Select Bey ${activeModalSlot + 1}`;
     } else {
         let coreString = "";
         const ratchetType = document.getElementById("select-ratchet-type").value;
@@ -225,8 +233,26 @@ function savePartsSelection() {
             let bit = document.getElementById("select-bit").value;
             coreString = `${ratch}${bit}`;
         }
-        displayBadge.innerText = `${bladeString} ${coreString}`.trim();
+        playerDecks[activeModalPlayer][activeModalSlot] = `${bladeString} ${coreString}`.trim();
     }
     
+    renderDeckDisplay(activeModalPlayer);
     closePartsModal();
+}
+
+function renderDeckDisplay(playerNum) {
+    for (let i = 0; i < 3; i++) {
+        document.getElementById(`p${playerNum}-combo-${i}`).innerText = playerDecks[playerNum][i];
+    }
+}
+
+function shiftLineup(playerNum, index, direction) {
+    let targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex > 2) return;
+    
+    let temp = playerDecks[playerNum][index];
+    playerDecks[playerNum][index] = playerDecks[playerNum][targetIndex];
+    playerDecks[playerNum][targetIndex] = temp;
+    
+    renderDeckDisplay(playerNum);
 }

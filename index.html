@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beyblade X Counter</title>
+    <title>Beyblade X Pro Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,12 +11,26 @@
     <div id="backdrop-layer" onclick="closePartsModal()"></div>
     <div id="announcement-layer"></div>
 
+    <div id="instruction-dialog" class="dialog-overlay">
+        <div class="dialog-box">
+            <div class="dialog-header">
+                <span class="dialog-icon">⚠️</span>
+                <h3 id="dialog-title">Arena Directive</h3>
+            </div>
+            <div class="dialog-body" id="dialog-message">
+                Instruction text goes here.
+            </div>
+            <div class="dialog-footer">
+                <button class="dialog-btn" onclick="closeInstructionDialog()">Acknowledge & Continue</button>
+            </div>
+        </div>
+    </div>
+
     <div id="parts-modal">
         <div class="modal-header">
             <span class="modal-title" id="modal-player-title">Select Player Combo</span>
             <button class="modal-close" onclick="savePartsSelection()">Confirm</button>
         </div>
-
         <div class="form-group">
             <label for="select-system">Blade System Generation</label>
             <select id="select-system" onchange="toggleSystemArchitectureLayout(this.value)">
@@ -25,75 +39,126 @@
                 <option value="CX_EXPAND">CX Expand System (Modular 4-Piece Blade)</option>
             </select>
         </div>
-
         <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-
         <div id="part-selectors-zone"></div>
     </div>
 
-    <h1 style="display: inline-flex; align-items: center; gap: 15px; margin: 5px 0 15px 0;">
-        Blader Scorekeeper
-        <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen"
-            style="background: #2f3542; color: white; border: none; border-radius: 6px; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
-            ⛶
-        </button>
-    </h1>
-    
-    <div class="settings-container">
-        <div class="settings">
-            <div>Points to Set:</div>
-            <div class="settings-control">
-                <button class="btn-small" onclick="adjustPointsLimit(-1)">-</button>
-                <span id="limit-display" class="limit-display">4</span>
-                <button class="btn-small" onclick="adjustPointsLimit(1)">+</button>
+    <header class="app-header">
+        <div class="header-main">
+            <h1>Blader Scorekeeper</h1>
+            <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">⛶</button>
+        </div>
+        
+        <div class="global-settings">
+            <div class="setting-pill">
+                <span>Points:</span>
+                <button class="btn-step" onclick="adjustPointsLimit(-1)">-</button>
+                <span id="limit-display" class="limit-val">4</span>
+                <button class="btn-step" onclick="adjustPointsLimit(1)">+</button>
+            </div>
+            <div class="setting-pill">
+                <span>Sets:</span>
+                <button class="btn-step" onclick="adjustSetsLimit(-1)">-</button>
+                <span id="sets-limit-display" class="limit-val">2</span>
+                <button class="btn-step" onclick="adjustSetsLimit(1)">+</button>
+            </div>
+            <button id="countdown" onclick="startCountdown()">⚡ Go Shoot!</button>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <section class="player-card" id="player-card-1">
+            <div class="card-header">
+                <input type="text" id="p1-name" class="name-input p1-accent" value="Player 1">
+                <div class="status-row">
+                    <span class="set-badge">SETS: <span id="p1-sets">0</span></span>
+                    <span id="p1-foul-badge" class="foul-badge"></span>
+                </div>
+            </div>
+            
+            <div class="score-display" id="p1-display">0</div>
+            
+            <div class="deck-container">
+                <span class="deck-label">3-BEY DECK LINEUP</span>
+                <div class="deck-slot" id="p1-slot-0" data-active="true">
+                    <span class="slot-num">1</span>
+                    <div class="combo-badge flex-badge" id="p1-combo-0" onclick="openPartsModal(1, 0)">+ Select Bey 1</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(1, 0, -1)">▲</button><button onclick="shiftLineup(1, 0, 1)">▼</button></div>
+                </div>
+                <div class="deck-slot" id="p1-slot-1">
+                    <span class="slot-num">2</span>
+                    <div class="combo-badge flex-badge" id="p1-combo-1" onclick="openPartsModal(1, 1)">+ Select Bey 2</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(1, 1, -1)">▲</button><button onclick="shiftLineup(1, 1, 1)">▼</button></div>
+                </div>
+                <div class="deck-slot" id="p1-slot-2">
+                    <span class="slot-num">3</span>
+                    <div class="combo-badge flex-badge" id="p1-combo-2" onclick="openPartsModal(1, 2)">+ Select Bey 3</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(1, 2, -1)">▲</button><button onclick="shiftLineup(1, 2, 1)">▼</button></div>
+                </div>
+            </div>
+
+            <div class="action-grid">
+                <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">Spin (+1)</button>
+                <button class="action-btn over" onclick="addScore(1, 2, 'over')">Over (+2)</button>
+                <button class="action-btn burst" onclick="addScore(1, 2, 'burst')">Burst (+2)</button>
+                <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">Xtreme (+3)</button>
+                <button class="action-btn foul" onclick="recordFoul(1)">Foul ⚠️</button>
+            </div>
+        </section>
+
+        <section class="player-card" id="player-card-2">
+            <div class="card-header">
+                <input type="text" id="p2-name" class="name-input p2-accent" value="Player 2">
+                <div class="status-row">
+                    <span class="set-badge">SETS: <span id="p2-sets">0</span></span>
+                    <span id="p2-foul-badge" class="foul-badge"></span>
+                </div>
+            </div>
+            
+            <div class="score-display" id="p2-display">0</div>
+            
+            <div class="deck-container">
+                <span class="deck-label">3-BEY DECK LINEUP</span>
+                <div class="deck-slot" id="p2-slot-0" data-active="true">
+                    <span class="slot-num">1</span>
+                    <div class="combo-badge flex-badge" id="p2-combo-0" onclick="openPartsModal(2, 0)">+ Select Bey 1</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(2, 0, -1)">▲</button><button onclick="shiftLineup(2, 0, 1)">▼</button></div>
+                </div>
+                <div class="deck-slot" id="p2-slot-1">
+                    <span class="slot-num">2</span>
+                    <div class="combo-badge flex-badge" id="p2-combo-1" onclick="openPartsModal(2, 1)">+ Select Bey 2</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(2, 1, -1)">▲</button><button onclick="shiftLineup(2, 1, 1)">▼</button></div>
+                </div>
+                <div class="deck-slot" id="p2-slot-2">
+                    <span class="slot-num">3</span>
+                    <div class="combo-badge flex-badge" id="p2-combo-2" onclick="openPartsModal(2, 2)">+ Select Bey 3</div>
+                    <div class="slot-reorder"><button onclick="shiftLineup(2, 2, -1)">▲</button><button onclick="shiftLineup(2, 2, 1)">▼</button></div>
+                </div>
+            </div>
+
+            <div class="action-grid">
+                <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">Spin (+1)</button>
+                <button class="action-btn over" onclick="addScore(2, 2, 'over')">Over (+2)</button>
+                <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">Burst (+2)</button>
+                <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">Xtreme (+3)</button>
+                <button class="action-btn foul" onclick="recordFoul(2)">Foul ⚠️</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bottom-panel">
+        <div class="log-section">
+            <div class="terminal-header">LIVE STADIUM TELEMETRY LOG</div>
+            <div id="history-log">
+                <div id="empty-log-msg">Waiting for match launch sequence. Let 'er rip!</div>
             </div>
         </div>
-
-        <div class="settings">
-            <div>Sets to Match:</div>
-            <div class="settings-control">
-                <button class="btn-small" onclick="adjustSetsLimit(-1)">-</button>
-                <span id="sets-limit-display" class="limit-display">2</span>
-                <button class="btn-small" onclick="adjustSetsLimit(1)">+</button>
-            </div>
+        <div class="utility-controls">
+            <button class="util-btn undo" onclick="undoLast()">Undo Step</button>
+            <button class="util-btn swap" onclick="swapSides()">⇄ Swap Sides</button>
+            <button id="arena-reset-btn" class="util-btn reset" onclick="resetGame()">Reset Arena</button>
         </div>
-    </div>
-    
-    <button id="countdown" onclick="startCountdown()">3, 2, 1, Go Shoot!</button>
-
-    <div class="score-board" id="main-scoreboard">
-        <div class="player" id="player-card-1">
-            <input type="text" id="p1-name" class="name-input" value="Player 1">
-            <div class="combo-badge" id="p1-combo" onclick="openPartsModal(1)">+ Select Combo</div>
-            <div class="set-display">SETS: <span id="p1-sets">0</span></div>
-            <div><div class="score" id="p1-display">0</div></div>
-            <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">Spin (+1)</button>
-            <button class="action-btn over" onclick="addScore(1, 2, 'over')">Over (+2)</button>
-            <button class="action-btn burst" onclick="addScore(1, 2, 'burst')">Burst (+2)</button>
-            <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">Xtreme (+3)</button>
-        </div>
-
-        <div class="player" id="player-card-2">
-            <input type="text" id="p2-name" class="name-input" value="Player 2">
-            <div class="combo-badge" id="p2-combo" onclick="openPartsModal(2)">+ Select Combo</div>
-            <div class="set-display">SETS: <span id="p2-sets">0</span></div>
-            <div><div class="score" id="p2-display">0</div></div>
-            <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">Spin (+1)</button>
-            <button class="action-btn over" onclick="addScore(2, 2, 'over')">Over (+2)</button>
-            <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">Burst (+2)</button>
-            <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">Xtreme (+3)</button>
-        </div>
-    </div>
-
-    <div class="log-heading">BATTLE LOG</div>
-    <div id="history-log">
-        <div id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>
-    </div>
-
-    <div class="control-panel">
-        <button class="utility-btn btn-undo" onclick="undoLast()">Undo Last</button>
-        <button class="utility-btn btn-reset" onclick="resetGame()">Reset Match</button>
-    </div>
+    </footer>
 
     <script src="parts.js"></script>
     <script src="app.js"></script>
