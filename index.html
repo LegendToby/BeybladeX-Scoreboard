@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyblade X Counter</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; overflow-x: hidden; position: relative; min-height: 90vh; }
+        
+        .settings { background: #1e1e1e; padding: 15px; border-radius: 8px; max-width: 320px; margin: 0 auto 20px auto; border: 1px solid #333; transition: opacity 0.3s; }
+        .settings-control { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; }
+        .btn-small { background: #444; color: white; border: none; padding: 5px 12px; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .btn-small:hover { background: #555; }
+        #limit-display { font-size: 1.5rem; font-weight: bold; color: #00d2d3; min-width: 30px; }
+        
+        .name-input { background: transparent; color: white; border: none; border-bottom: 2px dashed #555; text-align: center; font-size: 1.3rem; font-weight: bold; width: 80%; margin-bottom: 10px; }
+        .name-input:focus { border-bottom: 2px solid #ff4757; outline: none; }
+
+        .score-board { display: flex; justify-content: space-around; margin: 30px 0; position: relative; z-index: 1; transition: opacity 0.3s; }
+        .player { border: 2px solid #333; padding: 20px; border-radius: 10px; width: 45%; background: #1a1a1a; display: flex; flex-direction: column; gap: 8px; }
+        
+        .score { font-size: 4rem; font-weight: bold; margin: 5px 0; color: #ffcc00; display: inline-block; }
+        
+        /* Number Pop Animation */
+        @keyframes scorePop {
+            0% { transform: scale(1); color: #ffcc00; }
+            20% { transform: scale(1.5); color: #2ed573; text-shadow: 0 0 15px #2ed573; }
+            100% { transform: scale(1); color: #ffcc00; }
+        }
+        .pop { animation: scorePop 0.4s ease-out; }
+        
+        /* Dark backdrop layer that dims the background out for readability */
+        #backdrop-layer {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75); z-index: 998; opacity: 0;
+            pointer-events: none; transition: opacity 0.25s ease;
+        }
+        #backdrop-layer.active { opacity: 1; }
+
+        /* Central Announcement Foundation */
+        #announcement-layer {
+            position: fixed; top: 50%; left: 50%; font-size: 4.5rem; font-weight: 900;
+            text-transform: uppercase; font-style: italic; letter-spacing: 3px;
+            pointer-events: none; opacity: 0; z-index: 999; white-space: nowrap;
+        }
+
+        /* --- THE DYNAMIC RECONFIGURED ANIMATIONS --- */
+        
+        /* Spin Finish */
+        @keyframes spinAnim {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-360deg); opacity: 0; }
+            15% { transform: translate(-50%, -50%) scale(2) rotate(0deg); opacity: 1; }
+            85% { transform: translate(-50%, -50%) scale(1.8) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.4) rotate(180deg); opacity: 0; }
+        }
+        .anim-spin { animation: spinAnim 2.2s ease-in-out forwards; }
+
+        /* Over Finish */
+        @keyframes overAnim {
+            0% { transform: translate(-120%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(2.2) rotate(0deg); opacity: 1; }
+            85% { transform: translate(-50%, -50%) scale(1.8) rotate(0deg); opacity: 1; }
+            100% { transform: translate(10%, 50%) scale(0.5) rotate(20deg); opacity: 0; }
+        }
+        .anim-over { animation: overAnim 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* Burst Finish */
+        @keyframes burstAnim {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            10% { transform: translate(-50%, -50%) scale(2.2); opacity: 1; }
+            15%, 25%, 35%, 45%, 55%, 65%, 75% { transform: translate(calc(-50% + 20px), calc(-50% - 15px)) scale(2.2); }
+            20%, 30%, 40%, 50%, 60%, 70%, 80% { transform: translate(calc(-50% - 20px), calc(-50% + 15px)) scale(2.2); }
+            88% { transform: translate(-50%, -50%) scale(1.9); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+        }
+        .anim-burst { animation: burstAnim 2.2s forwards; }
+
+        /* Xtreme Finish */
+        @keyframes xtremeAnim {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            15% { transform: translate(-50%, -50%) scale(2.5) skewX(-15deg); opacity: 1; }
+            30% { transform: translate(-50%, -50%) scale(1.9) skewX(10deg); opacity: 1; }
+            45% { transform: translate(-50%, -50%) scale(2.2) skewX(-5deg); opacity: 1; }
+            85% { transform: translate(-50%, -50%) scale(2) skewX(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+        }
+        .anim-xtreme { animation: xtremeAnim 2.2s ease-out forwards; }
+
+        /* Winner Graphic Animation Sequence */
+        @keyframes victoryAnim {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-5deg); opacity: 0; }
+            40% { transform: translate(-50%, -50%) scale(1.3) rotate(2deg); opacity: 1; }
+            55% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.05) rotate(0deg); opacity: 1; }
+        }
+        .anim-victory { animation: victoryAnim 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* Text colors with custom glows */
+        .txt-spin { color: #ffffff; text-shadow: 0 0 20px #7f8c8d, 0 0 40px #ffffff; }
+        .txt-over { color: #0fbcf9; text-shadow: 0 0 25px #0fbcf9, 0 0 50px #00a8ff; }
+        .txt-burst { color: #ffa502; text-shadow: 0 0 25px #ffa502, 0 0 50px #ff7f50; }
+        .txt-xtreme { color: #ef57ff; text-shadow: 0 0 30px #9b59b6, 0 0 60px #ef57ff; }
+        
+        /* Crown Gold profile for the champion announcement */
+        .txt-victory { color: #ffdd59; text-shadow: 0 0 30px #ffdd59, 0 0 60px #ffd32a; font-size: 5rem; line-height: 1.1; }
+        .sub-victory { font-size: 2.5rem; color: #ffffff; text-shadow: none; display: block; margin-top: 10px; font-weight: bold; letter-spacing: 1px; }
+
+        /* Buttons */
+        button.action-btn { color: white; border: none; padding: 10px 15px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; }
+        button.spin { background: #485460; }
+        button.over { background: #0fbcf9; }
+        button.burst { background: #ffa502; }
+        button.xtreme { background: #9b59b6; box-shadow: 0 0 8px rgba(155, 89, 182, 0.6); } 
+        
+        #countdown { background: #2ed573; font-size: 1.5rem; padding: 15px 30px; margin-top: 10px; margin-bottom: 20px; width: 80%; max-width: 400px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; z-index: 1; position: relative; }
+        
+        .control-panel { display: flex; justify-content: center; gap: 15px; margin-top: 10px; position: relative; z-index: 1000; }
+        .utility-btn { color: white; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-reset { background: #747d8c; }
+        .btn-undo { background: #e1b12c; }
+
+        /* Mobile Layout Tweaks */
+        @media (max-width: 600px) {
+            .score-board { flex-direction: column; gap: 20px; align-items: center; }
+            .player { width: 90%; }
+            #announcement-layer { font-size: 2.5rem; }
+            .txt-victory { font-size: 3rem; }
+            .sub-victory { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="backdrop-layer"></div>
+    <div id="announcement-layer"></div>
+
+    <h1>Blader Scorekeeper</h1>
+    
+    <div class="settings" id="settings-box">
+        <div>First to Win:</div>
+        <div class="settings-control">
+            <button class="btn-small" onclick="adjustLimit(-1)">-</button>
+            <span id="limit-display">4</span>
+            <button class="btn-small" onclick="adjustLimit(1)">+</button>
+        </div>
+    </div>
+    
+    <button id="countdown" onclick="startCountdown()">3, 2, 1, Go Shoot!</button>
+
+    <div class="score-board" id="main-scoreboard">
+        <div class="player">
+            <input type="text" id="p1-name" class="name-input" value="Player 1">
+            <div><div class="score" id="p1-display">0</div></div>
+            <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">+1 Spin Finish</button>
+            <button class="action-btn over" onclick="addScore(1, 2, 'over')">+2 Over Finish</button>
+            <button class="action-btn burst" onclick="addScore(1, 2, 'burst')">+2 Burst Finish</button>
+            <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">+3 Xtreme Finish</button>
+        </div>
+
+        <div class="player">
+            <input type="text" id="p2-name" class="name-input" value="Player 2">
+            <div><div class="score" id="p2-display">0</div></div>
+            <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">+1 Spin Finish</button>
+            <button class="action-btn over" onclick="addScore(2, 2, 'over')">+2 Over Finish</button>
+            <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">+2 Burst Finish</button>
+            <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">+3 Xtreme Finish</button>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <button class="utility-btn btn-undo" onclick="undoLast()">Undo Last Score</button>
+        <button class="utility-btn btn-reset" onclick="resetGame()">Reset Match</button>
+    </div>
+
+    <script>
+        let p1Score = 0;
+        let p2Score = 0;
+        let winLimit = 4;
+        let scoreHistory = [];
+        let matchIsOver = false;
+        let victoryTimeoutToken = null;
+
+        const soundChannel = new Audio();
+
+        function playCustomSound(fileName) {
+            try {
+                soundChannel.pause();
+                soundChannel.currentTime = 0;
+                soundChannel.src = fileName + '.mp3';
+                
+                // Catching floating promises to stop console playback restrictions errors
+                let playPromise = soundChannel.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Audio skipped or prevented by browser automation guard rails.");
+                    });
+                }
+            } catch(e) {
+                console.log("Audio file missing or blocked:", e);
+            }
+        }
+
+        function adjustLimit(amount) {
+            if(matchIsOver || scoreHistory.length > 0) return; // Prevent changing limit mid-match
+            let newLimit = winLimit + amount;
+            if (newLimit >= 3 && newLimit <= 10) { // Extended upper limit to 10 for custom tournament structures
+                winLimit = newLimit;
+                document.getElementById('limit-display').innerText = winLimit;
+                resetGame();
+            }
+        }
+
+        function startCountdown() {
+            if(matchIsOver) return;
+            playCustomSound('countdown');
+        }
+
+        function addScore(player, points, finishType) {
+            // CRITICAL BUGFIX: Instantly locks interaction if a victory sequence is active
+            if (matchIsOver) return; 
+
+            let p1Name = document.getElementById('p1-name').value;
+            let p2Name = document.getElementById('p2-name').value;
+            let displayElement = document.getElementById(player === 1 ? 'p1-display' : 'p2-display');
+
+            scoreHistory.push({ p1: p1Score, p2: p2Score });
+
+            if (player === 1) {
+                p1Score += points;
+                displayElement.innerText = p1Score;
+                triggerPopAnimation(displayElement);
+                triggerMiddleAnnouncement(finishType);
+                
+                if (p1Score >= winLimit) {
+                    matchIsOver = true; // Hard state lock
+                    victoryTimeoutToken = setTimeout(() => {
+                        triggerWinnerDisplay(p1Name);
+                    }, 2200);
+                }
+            } else {
+                p2Score += points;
+                displayElement.innerText = p2Score;
+                triggerPopAnimation(displayElement);
+                triggerMiddleAnnouncement(finishType);
+                
+                if (p2Score >= winLimit) {
+                    matchIsOver = true; // Hard state lock
+                    victoryTimeoutToken = setTimeout(() => {
+                        triggerWinnerDisplay(p2Name);
+                    }, 2200);
+                }
+            }
+        }
+
+        function undoLast() {
+            if(victoryTimeoutToken) {
+                clearTimeout(victoryTimeoutToken);
+                victoryTimeoutToken = null;
+            }
+
+            matchIsOver = false;
+            soundChannel.pause();
+            document.getElementById('backdrop-layer').classList.remove('active');
+            document.getElementById('announcement-layer').className = '';
+            document.getElementById('announcement-layer').innerHTML = '';
+
+            if (scoreHistory.length > 0) {
+                let previousState = scoreHistory.pop();
+                p1Score = previousState.p1;
+                p2Score = previousState.p2;
+                document.getElementById('p1-display').innerText = p1Score;
+                document.getElementById('p2-display').innerText = p2Score;
+            }
+        }
+
+        function triggerMiddleAnnouncement(type) {
+            const backdrop = document.getElementById('backdrop-layer');
+            const el = document.getElementById('announcement-layer');
+            
+            backdrop.classList.add('active');
+            
+            // UI Quality Enhancement: Capitalizes the string gracefully for the popup layout
+            let formattedName = type.charAt(0).toUpperCase() + type.slice(1);
+            el.innerText = formattedName + " Finish!";
+            
+            el.className = '';
+            void el.offsetWidth; // DOM reflow trigger to restart CSS keyframes
+            el.classList.add('anim-' + type, 'txt-' + type);
+
+            playCustomSound(type);
+
+            setTimeout(() => {
+                // Only lift backdrop if the match isn't waiting to flash the champion screen
+                if (!matchIsOver) {
+                    backdrop.classList.remove('active');
+                }
+            }, 2200);
+        }
+
+        function triggerWinnerDisplay(winnerName) {
+            const backdrop = document.getElementById('backdrop-layer');
+            const el = document.getElementById('announcement-layer');
+            
+            backdrop.classList.add('active');
+            el.innerHTML = `VICTORY!<span class="sub-victory">${winnerName} wins the match!</span>`;
+            el.className = '';
+            void el.offsetWidth;
+            
+            el.classList.add('anim-victory', 'txt-victory');
+            playCustomSound('victory');
+        }
+
+        function triggerPopAnimation(element) {
+            element.classList.remove('pop');
+            void element.offsetWidth;        
+            element.classList.add('pop');    
+        }
+
+        function resetGame() {
+            if(victoryTimeoutToken) {
+                clearTimeout(victoryTimeoutToken);
+                victoryTimeoutToken = null;
+            }
+
+            matchIsOver = false;
+            soundChannel.pause();
+            p1Score = 0;
+            p2Score = 0;
+            scoreHistory = [];
+            document.getElementById('p1-display').innerText = 0;
+            document.getElementById('p2-display').innerText = 0;
+            document.getElementById('p1-display').classList.remove('pop');
+            document.getElementById('p2-display').classList.remove('pop');
+            
+            document.getElementById('backdrop-layer').classList.remove('active');
+            document.getElementById('announcement-layer').className = '';
+            document.getElementById('announcement-layer').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
