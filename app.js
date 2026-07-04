@@ -4,7 +4,7 @@ let scoreHistory = [];
 let matchIsOver = false;
 let midRoundTimeoutToken = null, victoryTimeoutToken = null;
 let activeAudioTracks = [];
-let activeModalPlayer = null; // Referenced globally by parts engine file seamlessly
+let activeModalPlayer = null; 
 
 function unlockAudioEngine() {
     let contextUnlock = new Audio();
@@ -20,9 +20,9 @@ function playCustomSound(fileName) {
         let cacheBuster = "?v=" + new Date().getTime();
         let track = new Audio(fileName + '.mp3' + cacheBuster);
         activeAudioTracks.push(track);
-        track.play().catch(e => console.log("Audio pipeline active tracking context..."));
+        track.play().catch(e => console.log("Audio contextual tracking pipeline sync..."));
         track.onended = () => activeAudioTracks = activeAudioTracks.filter(t => t !== track);
-    } catch(e) { console.log("Audio module load error:", e); }
+    } catch(e) { console.log("Audio track resource loading omitted:", e); }
 }
 
 function stopAllAudio() {
@@ -256,3 +256,31 @@ function resetGame() {
     const logContainer = document.getElementById('history-log');
     if(logContainer) logContainer.innerHTML = `<div id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
 }
+
+// ICON BASE SCREEN TOGGLE UTILITY
+function toggleFullscreen() {
+    const btn = document.getElementById('fullscreen-btn');
+    if (!btn) return;
+
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+            .then(() => {
+                btn.innerHTML = "🗗"; 
+                btn.style.background = "#ff4757"; 
+            })
+            .catch(err => console.log(`Fullscreen interaction error: ${err.message}`));
+    } else {
+        document.exitFullscreen();
+        btn.innerHTML = "⛶"; 
+        btn.style.background = "#2f3542";
+    }
+}
+
+document.addEventListener('fullscreenchange', () => {
+    const btn = document.getElementById('fullscreen-btn');
+    if (!btn) return;
+    if (!document.fullscreenElement) {
+        btn.innerHTML = "⛶";
+        btn.style.background = "#2f3542";
+    }
+});
