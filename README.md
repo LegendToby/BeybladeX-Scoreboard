@@ -1,2 +1,2 @@
-# Beyblade-X-Counter
+# BeybladeX-Scoreboard
 Beyblade X Score counter
