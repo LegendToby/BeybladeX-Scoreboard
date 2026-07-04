@@ -7,21 +7,42 @@
     <style>
         body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; overflow-x: hidden; position: relative; min-height: 90vh; }
         
-        .settings { background: #1e1e1e; padding: 15px; border-radius: 8px; max-width: 320px; margin: 0 auto 20px auto; border: 1px solid #333; transition: opacity 0.3s; }
+        .settings-container { display: flex; justify-content: center; gap: 15px; max-width: 500px; margin: 0 auto 20px auto; flex-wrap: wrap; }
+        .settings { background: #1e1e1e; padding: 15px; border-radius: 8px; flex: 1; min-width: 140px; border: 1px solid #333; }
         .settings-control { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; }
         .btn-small { background: #444; color: white; border: none; padding: 5px 12px; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .btn-small:hover { background: #555; }
-        #limit-display { font-size: 1.5rem; font-weight: bold; color: #00d2d3; min-width: 30px; }
+        .limit-display { font-size: 1.5rem; font-weight: bold; color: #00d2d3; min-width: 30px; }
         
-        .name-input { background: transparent; color: white; border: none; border-bottom: 2px dashed #555; text-align: center; font-size: 1.3rem; font-weight: bold; width: 80%; margin-bottom: 10px; }
-        .name-input:focus { border-bottom: 2px solid #ff4757; outline: none; }
+        .name-input { background: transparent; color: white; border: none; text-align: center; font-size: 1.3rem; font-weight: bold; width: 80%; margin-bottom: 8px; padding-bottom: 4px; transition: border-color 0.2s, box-shadow 0.2s; }
+        
+        #p1-name { border-bottom: 2px solid #3d3d3d; }
+        #p1-name:focus { border-bottom: 2px solid #ff4757; outline: none; filter: drop-shadow(0 2px 4px rgba(255, 71, 87, 0.4)); }
+        
+        #p2-name { border-bottom: 2px solid #3d3d3d; }
+        #p2-name:focus { border-bottom: 2px solid #0fbcf9; outline: none; filter: drop-shadow(0 2px 4px rgba(15, 188, 249, 0.4)); }
 
-        .score-board { display: flex; justify-content: space-around; margin: 30px 0; position: relative; z-index: 1; transition: opacity 0.3s; }
-        .player { border: 2px solid #333; padding: 20px; border-radius: 10px; width: 45%; background: #1a1a1a; display: flex; flex-direction: column; gap: 8px; }
+        .set-display { 
+            font-size: 0.85rem; 
+            color: #ffffff; 
+            font-weight: 800; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 12px; 
+            background: linear-gradient(135deg, #ff4757, #ff6b81); 
+            padding: 6px 16px; 
+            border-radius: 50px; 
+            display: inline-block; 
+            align-self: center;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .score-board { display: flex; justify-content: space-around; margin: 20px 0; position: relative; z-index: 1; transition: opacity 0.3s; }
+        .player { border: 2px solid #333; padding: 20px; border-radius: 10px; width: 45%; background: #1a1a1a; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         
         .score { font-size: 4rem; font-weight: bold; margin: 5px 0; color: #ffcc00; display: inline-block; }
         
-        /* Number Pop Animation */
         @keyframes scorePop {
             0% { transform: scale(1); color: #ffcc00; }
             20% { transform: scale(1.5); color: #2ed573; text-shadow: 0 0 15px #2ed573; }
@@ -29,7 +50,6 @@
         }
         .pop { animation: scorePop 0.4s ease-out; }
         
-        /* Dark backdrop layer that dims the background out for readability */
         #backdrop-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75); z-index: 998; opacity: 0;
@@ -37,16 +57,26 @@
         }
         #backdrop-layer.active { opacity: 1; }
 
-        /* Central Announcement Foundation */
+        @keyframes intenseShake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-8px, -5px) rotate(-2deg); }
+            20% { transform: translate(7px, 6px) rotate(3deg); }
+            30% { transform: translate(-6px, 7px) rotate(-1deg); }
+            40% { transform: translate(5px, -6px) rotate(2deg); }
+            50% { transform: translate(-7px, 5px) rotate(-3deg); }
+            60% { transform: translate(6px, -7px) rotate(1deg); }
+            70% { transform: translate(-5px, 6px) rotate(2deg); }
+            80% { transform: translate(7px, 5px) rotate(-2deg); }
+            90% { transform: translate(-6px, -5px) rotate(1deg); }
+        }
+        .shake-active { animation: intenseShake 0.6s ease-in-out; }
+
         #announcement-layer {
             position: fixed; top: 50%; left: 50%; font-size: 4.5rem; font-weight: 900;
             text-transform: uppercase; font-style: italic; letter-spacing: 3px;
             pointer-events: none; opacity: 0; z-index: 999; white-space: nowrap;
         }
 
-        /* --- THE DYNAMIC RECONFIGURED ANIMATIONS --- */
-        
-        /* Spin Finish */
         @keyframes spinAnim {
             0% { transform: translate(-50%, -50%) scale(0) rotate(-360deg); opacity: 0; }
             15% { transform: translate(-50%, -50%) scale(2) rotate(0deg); opacity: 1; }
@@ -55,7 +85,6 @@
         }
         .anim-spin { animation: spinAnim 2.2s ease-in-out forwards; }
 
-        /* Over Finish */
         @keyframes overAnim {
             0% { transform: translate(-120%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
             20% { transform: translate(-50%, -50%) scale(2.2) rotate(0deg); opacity: 1; }
@@ -64,29 +93,35 @@
         }
         .anim-over { animation: overAnim 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Burst Finish */
-        @keyframes burstAnim {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            10% { transform: translate(-50%, -50%) scale(2.2); opacity: 1; }
-            15%, 25%, 35%, 45%, 55%, 65%, 75% { transform: translate(calc(-50% + 20px), calc(-50% - 15px)) scale(2.2); }
-            20%, 30%, 40%, 50%, 60%, 70%, 80% { transform: translate(calc(-50% - 20px), calc(-50% + 15px)) scale(2.2); }
-            88% { transform: translate(-50%, -50%) scale(1.9); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+        @keyframes burstExplode {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; filter: blur(5px); }
+            10% { transform: translate(-50%, -50%) scale(2.5); opacity: 1; filter: blur(0px); }
+            15% { transform: translate(-50%, -50%) scale(2); }
+            50% { transform: translate(-50%, -50%) scale(2.3); letter-spacing: 12px; }
+            85% { transform: translate(-50%, -50%) scale(2); letter-spacing: 2px; opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(4); opacity: 0; filter: blur(10px); letter-spacing: 30px; }
         }
-        .anim-burst { animation: burstAnim 2.2s forwards; }
+        .anim-burst { animation: burstExplode 2.2s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
 
-        /* Xtreme Finish */
-        @keyframes xtremeAnim {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            15% { transform: translate(-50%, -50%) scale(2.5) skewX(-15deg); opacity: 1; }
-            30% { transform: translate(-50%, -50%) scale(1.9) skewX(10deg); opacity: 1; }
-            45% { transform: translate(-50%, -50%) scale(2.2) skewX(-5deg); opacity: 1; }
-            85% { transform: translate(-50%, -50%) scale(2) skewX(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+        @keyframes xtremeImpact {
+            0% { transform: translate(-50%, -50%) scale(8) rotate(-45deg); opacity: 0; filter: brightness(5); }
+            8% { transform: translate(-50%, -50%) scale(1.8) rotate(5deg); opacity: 1; filter: brightness(2); }
+            12% { transform: translate(-50%, -50%) scale(2.5) rotate(0deg); filter: brightness(1); }
+            30% { transform: translate(-50%, -50%) scale(2.3) skewX(-20deg); }
+            45% { transform: translate(-50%, -50%) scale(2.6) skewX(15deg); }
+            80% { transform: translate(-50%, -50%) scale(2.4) skewX(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0) rotate(720deg); opacity: 0; }
         }
-        .anim-xtreme { animation: xtremeAnim 2.2s ease-out forwards; }
+        .anim-xtreme { animation: xtremeImpact 2.2s cubic-bezier(0.15, 1.1, 0.3, 1) forwards; }
 
-        /* Winner Graphic Animation Sequence */
+        @keyframes setCompleteAnim {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            15% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+            85% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        }
+        .anim-set-complete { animation: setCompleteAnim 3.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
         @keyframes victoryAnim {
             0% { transform: translate(-50%, -50%) scale(0) rotate(-5deg); opacity: 0; }
             40% { transform: translate(-50%, -50%) scale(1.3) rotate(2deg); opacity: 1; }
@@ -95,31 +130,31 @@
         }
         .anim-victory { animation: victoryAnim 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Text colors with custom glows */
         .txt-spin { color: #ffffff; text-shadow: 0 0 20px #7f8c8d, 0 0 40px #ffffff; }
         .txt-over { color: #0fbcf9; text-shadow: 0 0 25px #0fbcf9, 0 0 50px #00a8ff; }
-        .txt-burst { color: #ffa502; text-shadow: 0 0 25px #ffa502, 0 0 50px #ff7f50; }
-        .txt-xtreme { color: #ef57ff; text-shadow: 0 0 30px #9b59b6, 0 0 60px #ef57ff; }
+        .txt-burst { color: #ffa502; text-shadow: 0 0 20px #ffa502, 0 0 40px #ff7f50, 0 0 60px #ff4757; }
+        .txt-xtreme { color: #ef57ff; text-shadow: 0 0 25px #9b59b6, 0 0 50px #ef57ff, 0 0 80px #6c5ce7; font-weight: 950; }
         
-        /* Crown Gold profile for the champion announcement */
+        .txt-set-complete { color: #2ed573; text-shadow: 0 0 25px #2ed573, 0 0 50px #26de81; }
+        .sub-set { font-size: 2rem; color: #ffffff; text-shadow: none; display: block; margin-top: 8px; font-weight: bold; }
+
         .txt-victory { color: #ffdd59; text-shadow: 0 0 30px #ffdd59, 0 0 60px #ffd32a; font-size: 5rem; line-height: 1.1; }
         .sub-victory { font-size: 2.5rem; color: #ffffff; text-shadow: none; display: block; margin-top: 10px; font-weight: bold; letter-spacing: 1px; }
 
-        /* Buttons */
-        button.action-btn { color: white; border: none; padding: 10px 15px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; }
+        button.action-btn { color: white; border: none; padding: 10px 15px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; transition: transform 0.1s; }
+        button.action-btn:active { transform: scale(0.96); }
         button.spin { background: #485460; }
         button.over { background: #0fbcf9; }
         button.burst { background: #ffa502; }
         button.xtreme { background: #9b59b6; box-shadow: 0 0 8px rgba(155, 89, 182, 0.6); } 
         
-        #countdown { background: #2ed573; font-size: 1.5rem; padding: 15px 30px; margin-top: 10px; margin-bottom: 20px; width: 80%; max-width: 400px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; z-index: 1; position: relative; }
+        #countdown { background: #2ed573; font-size: 1.5rem; padding: 15px 30px; margin-top: 10px; margin-bottom: 20px; width: 80%; max-width: 400px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; z-index: 1; position: relative; box-shadow: 0 5px 15px rgba(46, 213, 115, 0.4); }
         
         .control-panel { display: flex; justify-content: center; gap: 15px; margin-top: 10px; position: relative; z-index: 1000; }
         .utility-btn { color: white; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .btn-reset { background: #747d8c; }
         .btn-undo { background: #e1b12c; }
 
-        /* Mobile Layout Tweaks */
         @media (max-width: 600px) {
             .score-board { flex-direction: column; gap: 20px; align-items: center; }
             .player { width: 90%; }
@@ -136,20 +171,33 @@
 
     <h1>Blader Scorekeeper</h1>
     
-    <div class="settings" id="settings-box">
-        <div>First to Win:</div>
-        <div class="settings-control">
-            <button class="btn-small" onclick="adjustLimit(-1)">-</button>
-            <span id="limit-display">4</span>
-            <button class="btn-small" onclick="adjustLimit(1)">+</button>
+    <div class="settings-container">
+        <div class="settings">
+            <div>Points to Win Set:</div>
+            <div class="settings-control">
+                <button class="btn-small" onclick="adjustPointsLimit(-1)">-</button>
+                <span id="limit-display" class="limit-display">4</span>
+                <button class="btn-small" onclick="adjustPointsLimit(1)">+</button>
+            </div>
+        </div>
+
+        <div class="settings">
+            <div>Sets to Win Match:</div>
+            <div class="settings-control">
+                <button class="btn-small" onclick="adjustSetsLimit(-1)">-</button>
+                <span id="sets-limit-display" class="limit-display">2</span>
+                <button class="btn-small" onclick="adjustSetsLimit(1)">+</button>
+            </div>
         </div>
     </div>
     
     <button id="countdown" onclick="startCountdown()">3, 2, 1, Go Shoot!</button>
 
     <div class="score-board" id="main-scoreboard">
-        <div class="player">
+        <!-- Player 1 -->
+        <div class="player" id="player-card-1">
             <input type="text" id="p1-name" class="name-input" value="Player 1">
+            <div class="set-display">SETS: <span id="p1-sets">0</span></div>
             <div><div class="score" id="p1-display">0</div></div>
             <button class="action-btn spin" onclick="addScore(1, 1, 'spin')">+1 Spin Finish</button>
             <button class="action-btn over" onclick="addScore(1, 2, 'over')">+2 Over Finish</button>
@@ -157,14 +205,21 @@
             <button class="action-btn xtreme" onclick="addScore(1, 3, 'xtreme')">+3 Xtreme Finish</button>
         </div>
 
-        <div class="player">
+        <!-- Player 2 -->
+        <div class="player" id="player-card-2">
             <input type="text" id="p2-name" class="name-input" value="Player 2">
+            <div class="set-display">SETS: <span id="p2-sets">0</span></div>
             <div><div class="score" id="p2-display">0</div></div>
             <button class="action-btn spin" onclick="addScore(2, 1, 'spin')">+1 Spin Finish</button>
             <button class="action-btn over" onclick="addScore(2, 2, 'over')">+2 Over Finish</button>
             <button class="action-btn burst" onclick="addScore(2, 2, 'burst')">+2 Burst Finish</button>
             <button class="action-btn xtreme" onclick="addScore(2, 3, 'xtreme')">+3 Xtreme Finish</button>
         </div>
+    </div>
+
+    <h3 style="margin-top: 30px; color: #a4b0be; letter-spacing: 1px;">BATTLE LOG</h3>
+    <div id="history-log" style="background: #1e1e1e; max-width: 500px; margin: 0 auto 20px auto; padding: 10px; border-radius: 8px; border: 1px solid #333; max-height: 150px; overflow-y: auto; text-align: left;">
+        <div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>
     </div>
 
     <div class="control-panel">
@@ -175,40 +230,69 @@
     <script>
         let p1Score = 0;
         let p2Score = 0;
-        let winLimit = 4;
+        let p1Sets = 0;
+        let p2Sets = 0;
+        
+        let winLimit = 4;      
+        let setsWinLimit = 2;  
+        
         let scoreHistory = [];
         let matchIsOver = false;
+        let midRoundTimeoutToken = null;
         let victoryTimeoutToken = null;
 
         const soundChannel = new Audio();
 
+        function unlockAudioEngine() {
+            soundChannel.play().then(() => {
+                soundChannel.pause();
+                soundChannel.currentTime = 0;
+            }).catch(e => console.log("Engine unlock context pending."));
+            
+            window.removeEventListener('mousedown', unlockAudioEngine);
+            window.removeEventListener('touchstart', unlockAudioEngine);
+        }
+        window.addEventListener('mousedown', unlockAudioEngine);
+        window.addEventListener('touchstart', unlockAudioEngine);
+
         function playCustomSound(fileName) {
             try {
                 soundChannel.pause();
+                soundChannel.src = ''; 
+                soundChannel.load(); 
                 soundChannel.currentTime = 0;
                 soundChannel.src = fileName + '.mp3';
-                
-                // Catching floating promises to stop console playback restrictions errors
                 let playPromise = soundChannel.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log("Audio skipped or prevented by browser automation guard rails.");
-                    });
+                    playPromise.catch(error => console.log("Audio pipeline blocked."));
                 }
             } catch(e) {
-                console.log("Audio file missing or blocked:", e);
+                console.log("Audio error:", e);
             }
         }
 
-        function adjustLimit(amount) {
-            if(matchIsOver || scoreHistory.length > 0) return; // Prevent changing limit mid-match
+        function adjustPointsLimit(amount) {
+            if(matchIsOver || scoreHistory.length > 0) return; 
             let newLimit = winLimit + amount;
-            if (newLimit >= 3 && newLimit <= 10) { // Extended upper limit to 10 for custom tournament structures
+            if (newLimit >= 1 && newLimit <= 10) { 
                 winLimit = newLimit;
                 document.getElementById('limit-display').innerText = winLimit;
                 resetGame();
             }
         }
+
+        function adjustSetsLimit(amount) {
+            if(matchIsOver || scoreHistory.length > 0) return;
+            let newLimit = setsWinLimit + amount;
+            if (newLimit >= 1 && newLimit <= 5) {
+                setsWinLimit = newLimit;
+                document.getElementById('sets-limit-display').innerText = setsWinLimit;
+                resetGame();
+            }
+        }
+
+        document.getElementById('p1-name').addEventListener('click', (e) => e.stopPropagation());
+        document.getElementById('p2-name').addEventListener('click', (e) => e.stopPropagation());
 
         function startCountdown() {
             if(matchIsOver) return;
@@ -216,85 +300,211 @@
         }
 
         function addScore(player, points, finishType) {
-            // CRITICAL BUGFIX: Instantly locks interaction if a victory sequence is active
-            if (matchIsOver) return; 
+            if (matchIsOver || midRoundTimeoutToken) return; 
 
             let p1Name = document.getElementById('p1-name').value;
             let p2Name = document.getElementById('p2-name').value;
             let displayElement = document.getElementById(player === 1 ? 'p1-display' : 'p2-display');
 
-            scoreHistory.push({ p1: p1Score, p2: p2Score });
+            let formattedFinish = finishType.charAt(0).toUpperCase() + finishType.slice(1);
+            let scorerName = player === 1 ? p1Name : p2Name;
+            let logDescription = `${scorerName} scored +${points} via ${formattedFinish} Finish!`;
+
+            scoreHistory.push({
+                p1Score: p1Score, p2Score: p2Score,
+                p1Sets: p1Sets, p2Sets: p2Sets,
+                logText: logDescription
+            });
+
+            let setAwarded = false;
+            let currentWinner = "";
 
             if (player === 1) {
                 p1Score += points;
-                displayElement.innerText = p1Score;
+                document.getElementById('p1-display').innerText = p1Score;
                 triggerPopAnimation(displayElement);
-                triggerMiddleAnnouncement(finishType);
                 
                 if (p1Score >= winLimit) {
-                    matchIsOver = true; // Hard state lock
-                    victoryTimeoutToken = setTimeout(() => {
-                        triggerWinnerDisplay(p1Name);
-                    }, 2200);
+                    p1Sets += 1;
+                    setAwarded = true;
+                    currentWinner = p1Name;
+                    logDescription += ` ⭐ ${p1Name} wins the Set!`;
+                    scoreHistory[scoreHistory.length - 1].logText = logDescription;
+                    if (p1Sets >= setsWinLimit) matchIsOver = true; 
                 }
             } else {
                 p2Score += points;
-                displayElement.innerText = p2Score;
+                document.getElementById('p2-display').innerText = p2Score;
                 triggerPopAnimation(displayElement);
-                triggerMiddleAnnouncement(finishType);
                 
                 if (p2Score >= winLimit) {
-                    matchIsOver = true; // Hard state lock
-                    victoryTimeoutToken = setTimeout(() => {
-                        triggerWinnerDisplay(p2Name);
-                    }, 2200);
+                    p2Sets += 1;
+                    setAwarded = true;
+                    currentWinner = p2Name;
+                    logDescription += ` ⭐ ${p2Name} wins the Set!`;
+                    scoreHistory[scoreHistory.length - 1].logText = logDescription;
+                    if (p2Sets >= setsWinLimit) matchIsOver = true; 
                 }
             }
+
+            // UPGRADED SEQUENCE: Always show the point finish banner first. 
+            // If a set is won, pass a chain-callback to run the "Set Complete" banner right after.
+            if (setAwarded) {
+                triggerMiddleAnnouncement(finishType, () => {
+                    triggerSetCompleteAnnouncement(currentWinner);
+                });
+            } else {
+                triggerMiddleAnnouncement(finishType);
+            }
+
+            updateUI();
+            updateLogDisplay(logDescription);
+        }
+
+        function updateUI() {
+            document.getElementById('p1-display').innerText = p1Score;
+            document.getElementById('p2-display').innerText = p2Score;
+            document.getElementById('p1-sets').innerText = p1Sets;
+            document.getElementById('p2-sets').innerText = p2Sets;
+        }
+
+        function updateLogDisplay(text) {
+            const logContainer = document.getElementById('history-log');
+            const emptyMsg = document.getElementById('empty-log-msg');
+            
+            if (emptyMsg) emptyMsg.remove();
+
+            let roundNumber = scoreHistory.length;
+            let logRow = document.createElement('div');
+            logRow.style.padding = '6px 10px';
+            logRow.style.borderBottom = '1px solid #2a2a2a';
+            logRow.style.fontSize = '0.95rem';
+            logRow.style.color = text.includes('⭐') ? '#ff4757' : '#ffffff';
+            
+            logRow.innerHTML = `<b style="color: #ffcc00;">Round ${roundNumber}:</b> ${text} <span style="float: right; color: #a4b0be; font-weight: bold;">[S:${p1Sets}-${p2Sets} P:${p1Score}-${p2Score}]</span>`;
+            
+            logContainer.appendChild(logRow);
+            logContainer.scrollTop = logContainer.scrollHeight;
         }
 
         function undoLast() {
-            if(victoryTimeoutToken) {
-                clearTimeout(victoryTimeoutToken);
-                victoryTimeoutToken = null;
-            }
+            if(victoryTimeoutToken) { clearTimeout(victoryTimeoutToken); victoryTimeoutToken = null; }
+            if(midRoundTimeoutToken) { clearTimeout(midRoundTimeoutToken); midRoundTimeoutToken = null; }
 
             matchIsOver = false;
             soundChannel.pause();
             document.getElementById('backdrop-layer').classList.remove('active');
             document.getElementById('announcement-layer').className = '';
             document.getElementById('announcement-layer').innerHTML = '';
+            document.body.classList.remove('shake-active');
 
             if (scoreHistory.length > 0) {
-                let previousState = scoreHistory.pop();
-                p1Score = previousState.p1;
-                p2Score = previousState.p2;
-                document.getElementById('p1-display').innerText = p1Score;
-                document.getElementById('p2-display').innerText = p2Score;
+                let lastState = scoreHistory.pop();
+                
+                p1Score = lastState.p1Score;
+                p2Score = lastState.p2Score;
+                p1Sets = lastState.p1Sets;
+                p2Sets = lastState.p2Sets;
+                
+                const logContainer = document.getElementById('history-log');
+                logContainer.innerHTML = ''; 
+                
+                if (scoreHistory.length === 0) {
+                    logContainer.innerHTML = `<div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
+                } else {
+                    let workingHistory = [...scoreHistory];
+                    scoreHistory = [];
+                    
+                    workingHistory.forEach((snapshot) => {
+                        scoreHistory.push(snapshot);
+                        let roundRow = document.createElement('div');
+                        roundRow.style.padding = '6px 10px';
+                        roundRow.style.borderBottom = '1px solid #2a2a2a';
+                        roundRow.style.fontSize = '0.95rem';
+                        roundRow.style.color = snapshot.logText.includes('⭐') ? '#ff4757' : '#ffffff';
+                        
+                        let checkP1 = snapshot.p1Score;
+                        let checkP2 = snapshot.p2Score;
+                        let checkS1 = snapshot.p1Sets;
+                        let checkS2 = snapshot.p2Sets;
+                        
+                        if (snapshot.logText.includes('wins the Set!')) {
+                            if (snapshot.logText.includes(document.getElementById('p1-name').value)) { checkS1 += 1; } else { checkS2 += 1; }
+                            checkP1 = 0; checkP2 = 0;
+                        } else {
+                            if (snapshot.logText.includes(document.getElementById('p1-name').value)) {
+                                checkP1 += (snapshot.logText.includes('+1') ? 1 : snapshot.logText.includes('+2') ? 2 : 3);
+                            } else {
+                                checkP2 += (snapshot.logText.includes('+1') ? 1 : snapshot.logText.includes('+2') ? 2 : 3);
+                            }
+                        }
+
+                        roundRow.innerHTML = `<b style="color: #ffcc00;">Round ${scoreHistory.length}:</b> ${snapshot.logText} <span style="float: right; color: #a4b0be; font-weight: bold;">[S:${checkS1}-${checkS2} P:${checkP1}-${checkP2}]</span>`;
+                        logContainer.appendChild(roundRow);
+                    });
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                }
+                updateUI();
             }
         }
 
-        function triggerMiddleAnnouncement(type) {
+        // UPGRADED: Accepts an optional callback to gracefully sequence animations
+        function triggerMiddleAnnouncement(type, chainCallback) {
             const backdrop = document.getElementById('backdrop-layer');
             const el = document.getElementById('announcement-layer');
             
             backdrop.classList.add('active');
             
-            // UI Quality Enhancement: Capitalizes the string gracefully for the popup layout
             let formattedName = type.charAt(0).toUpperCase() + type.slice(1);
             el.innerText = formattedName + " Finish!";
-            
             el.className = '';
-            void el.offsetWidth; // DOM reflow trigger to restart CSS keyframes
+            void el.offsetWidth; 
             el.classList.add('anim-' + type, 'txt-' + type);
+
+            if (type === 'burst' || type === 'xtreme') {
+                document.body.classList.remove('shake-active');
+                void document.body.offsetWidth;
+                document.body.classList.add('shake-active');
+            }
 
             playCustomSound(type);
 
-            setTimeout(() => {
-                // Only lift backdrop if the match isn't waiting to flash the champion screen
-                if (!matchIsOver) {
-                    backdrop.classList.remove('active');
+            midRoundTimeoutToken = setTimeout(() => {
+                backdrop.classList.remove('active');
+                document.body.classList.remove('shake-active');
+                midRoundTimeoutToken = null;
+                
+                // If there's a subsequent layout banner waiting in line, fire it now
+                if (chainCallback) {
+                    chainCallback();
                 }
             }, 2200);
+        }
+
+        function triggerSetCompleteAnnouncement(setWinner) {
+            const backdrop = document.getElementById('backdrop-layer');
+            const el = document.getElementById('announcement-layer');
+            
+            backdrop.classList.add('active');
+            el.innerHTML = `SET COMPLETE!<span class="sub-set">${setWinner} takes the Set!</span>`;
+            el.className = '';
+            void el.offsetWidth;
+            
+            el.classList.add('anim-set-complete', 'txt-set-complete');
+            playCustomSound('victory'); 
+
+            midRoundTimeoutToken = setTimeout(() => {
+                backdrop.classList.remove('active');
+                midRoundTimeoutToken = null;
+                
+                if (matchIsOver) {
+                    triggerWinnerDisplay(setWinner);
+                } else {
+                    p1Score = 0;
+                    p2Score = 0;
+                    updateUI();
+                }
+            }, 3200);
         }
 
         function triggerWinnerDisplay(winnerName) {
@@ -302,7 +512,7 @@
             const el = document.getElementById('announcement-layer');
             
             backdrop.classList.add('active');
-            el.innerHTML = `VICTORY!<span class="sub-victory">${winnerName} wins the match!</span>`;
+            el.innerHTML = `MATCH OVER!<span class="sub-victory">${winnerName} Wins the Battle!</span>`;
             el.className = '';
             void el.offsetWidth;
             
@@ -317,24 +527,28 @@
         }
 
         function resetGame() {
-            if(victoryTimeoutToken) {
-                clearTimeout(victoryTimeoutToken);
-                victoryTimeoutToken = null;
-            }
+            if(victoryTimeoutToken) { clearTimeout(victoryTimeoutToken); victoryTimeoutToken = null; }
+            if(midRoundTimeoutToken) { clearTimeout(midRoundTimeoutToken); midRoundTimeoutToken = null; }
 
             matchIsOver = false;
             soundChannel.pause();
             p1Score = 0;
             p2Score = 0;
+            p1Sets = 0;
+            p2Sets = 0;
             scoreHistory = [];
-            document.getElementById('p1-display').innerText = 0;
-            document.getElementById('p2-display').innerText = 0;
+            
+            updateUI();
+            
+            document.body.classList.remove('shake-active');
             document.getElementById('p1-display').classList.remove('pop');
             document.getElementById('p2-display').classList.remove('pop');
-            
             document.getElementById('backdrop-layer').classList.remove('active');
             document.getElementById('announcement-layer').className = '';
             document.getElementById('announcement-layer').innerHTML = '';
+
+            const logContainer = document.getElementById('history-log');
+            logContainer.innerHTML = `<div style="color: #747d8c; text-align: center; font-style: italic; font-size: 0.9rem;" id="empty-log-msg">No rounds recorded yet. Let 'er rip!</div>`;
         }
     </script>
 </body>
