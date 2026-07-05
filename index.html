@@ -29,7 +29,7 @@
     <div id="parts-modal">
         <div class="modal-header">
             <span class="modal-title" id="modal-player-title">Select Player Combo</span>
-            <button class="modal-close" onclick="savePartsSelection()">Confirm</button>
+            <button class="clear-btn-top" onclick="clearPartsSelection()">Clear Slot</button>
         </div>
         <div class="form-group">
             <label for="select-system">Blade System Architecture</label>
@@ -51,7 +51,7 @@
         </div>
 
         <div id="dynamic-ratchet-inputs"></div>
-        <button class="clear-btn" onclick="clearPartsSelection()">Clear Combo Slot</button>
+        <button class="modal-confirm-btn" onclick="savePartsSelection()">Confirm Selection</button>
     </div>
 
     <header class="app-header">
@@ -81,7 +81,6 @@
     </div>
 
     <main class="arena-layout">
-        <!-- PLAYER 1 STATION -->
         <section class="player-station p1" id="player-card-1">
             <div class="station-header">
                 <input type="text" class="blader-name-input" id="p1-name" value="Player 1" spellcheck="false">
@@ -127,7 +126,6 @@
             </div>
         </section>
 
-        <!-- CENTER OPERATIONAL CONTROL HUB -->
         <section class="control-tower">
             <div class="tower-panel launch-system">
                 <button class="prime-launch-btn" onclick="startCountdown()">LAUNCH COUNTDOWN</button>
@@ -157,7 +155,6 @@
             <button class="full-reset-btn" id="arena-reset-btn" onclick="resetGame()">RESET FIELD AREA</button>
         </section>
 
-        <!-- PLAYER 2 STATION -->
         <section class="player-station p2" id="player-card-2">
             <div class="station-header">
                 <input type="text" class="blader-name-input" id="p2-name" value="Player 2" spellcheck="false">

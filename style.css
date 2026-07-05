@@ -26,6 +26,11 @@ body {
     position: relative;
 }
 
+/* Fast-click optimizations for tournament matrix grids */
+button, .combo-lineup, .util-btn {
+    touch-action: manipulation;
+}
+
 .app-header {
     width: 100%;
     max-width: 950px;
@@ -621,10 +626,19 @@ body.shake-active { animation: arenaTectonicStrike 0.4s linear; }
 }
 .modal-title { font-size: 1rem; font-weight: bold; color: var(--accent-gold); }
 
-.modal-close {
-    background: #2ed573; color: white; border: none;
-    padding: 5px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem;
+/* Swapped Red Clear Button on Top Right */
+.clear-btn-top {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
 }
+.clear-btn-top:hover { background: #ff6b81; }
 
 .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
 .form-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
@@ -639,12 +653,24 @@ body.shake-active { animation: arenaTectonicStrike 0.4s linear; }
 .nested-row { display: flex; gap: 10px; }
 .nested-row .form-group { flex: 1; }
 
-.clear-btn {
-    width: 100%; background: #ff4757; color: white; border: none;
-    padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;
-    font-size: 0.8rem; margin-top: 10px; transition: background 0.2s;
+/* Swapped Green Confirm Button on Bottom Anchor */
+.modal-confirm-btn {
+    width: 100%;
+    background: #2ed573;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.1s;
 }
-.clear-btn:hover { background: #ff6b81; }
+.modal-confirm-btn:hover { background: #26de81; }
+.modal-confirm-btn:active { transform: scale(0.98); }
 
 .pop { animation: statBlast 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes statBlast {
@@ -699,9 +725,9 @@ body.shake-active { animation: arenaTectonicStrike 0.4s linear; }
     .arena-layout { flex-direction: column; gap: 12px; }
     .control-tower { order: -1; flex-direction: row; flex-wrap: wrap; width: 100%; }
     .tower-panel.launch-system { flex: 1; min-width: 100%; }
-    .tower-panel.setup-matrix { flex: 1; }
-    .lock-deck-btn { flex: 1; height: auto; align-self: stretch; display: flex; align-items: center; justify-content: center; }
-    .full-reset-btn { display: block; margin-top: 0; width: 100%; }
+    .tower-panel.setup-matrix { flex: 1; min-width: calc(50% - 6px); }
+    .lock-deck-btn { flex: 1; min-width: calc(50% - 6px); height: auto; align-self: stretch; display: flex; align-items: center; justify-content: center; }
+    .full-reset-btn { display: block; margin-top: 8px; width: 100%; flex: 1 1 100%; }
     .bottom-panel { flex-direction: column; gap: 10px; }
     .utility-controls { flex-direction: row; }
     .matrix-grid-data { gap: 15px; }
