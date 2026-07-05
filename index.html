@@ -32,68 +32,89 @@
             <button class="modal-close" onclick="savePartsSelection()">Confirm</button>
         </div>
         <div class="form-group">
-            <label for="select-system">Blade System Generation</label>
-            <select id="select-system" onchange="toggleSystemArchitectureLayout(this.value)">
-                <option value="STANDARD">BX / UX Line (Solid 1-Piece Blade)</option>
-                <option value="CX_STANDARD">CX Line (Modular 3-Piece Blade)</option>
-                <option value="CX_EXPAND">CX Expand System (Modular 4-Piece Blade)</option>
+            <label for="select-system">Blade System Architecture</label>
+            <select id="select-system" onchange="handleSystemChange()">
+                <option value="STANDARD">UX / BX Standard System</option>
+                <option value="CX_MODULAR">CX Modular Lock Architecture</option>
+                <option value="CX_EXPAND">CX Expand Outer Ring Architecture</option>
             </select>
         </div>
-        <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-        <div id="part-selectors-zone"></div>
+
+        <div id="dynamic-blade-inputs"></div>
+
+        <div class="form-group">
+            <label for="select-ratchet-type">Ratchet System Type</label>
+            <select id="select-ratchet-type" onchange="handleRatchetTypeChange()">
+                <option value="STANDARD">Standard Height Ratchet</option>
+                <option value="HYBRID">Hybrid Integrated Core</option>
+            </select>
+        </div>
+
+        <div id="dynamic-ratchet-inputs"></div>
+        <button class="clear-btn" onclick="clearPartsSelection()">Clear Combo Slot</button>
     </div>
 
     <header class="app-header">
         <div class="header-main">
-            <h1>Blader Scorekeeper</h1>
-            <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">⛶</button>
-        </div>
-        
-        <div class="global-settings">
-            <div class="setting-pill">
-                <span>Points:</span>
-                <button class="btn-step" onclick="adjustPointsLimit(-1)">-</button>
-                <span id="limit-display" class="limit-val">4</span>
-                <button class="btn-step" onclick="adjustPointsLimit(1)">+</button>
+            <h1>BeybladeX Scoreboard</h1>
+            <div style="display: flex; gap: 8px;">
+                <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">⛶</button>
+                <a href="https://www.buymeacoffee.com/legendtoby" target="_blank" id="support-btn" title="Support App">☕</a>
             </div>
-            <div class="setting-pill">
-                <span>Sets:</span>
-                <button class="btn-step" onclick="adjustSetsLimit(-1)">-</button>
-                <span id="sets-limit-display" class="limit-val">2</span>
-                <button class="btn-step" onclick="adjustSetsLimit(1)">+</button>
-            </div>
-            <button id="countdown" onclick="startCountdown()">⚡ Go Shoot!</button>
         </div>
     </header>
 
-    <main class="dashboard-grid">
-        <section class="player-card" id="player-card-1">
-            <div class="card-header">
-                <input type="text" id="p1-name" class="name-input p1-accent" value="Player 1">
-                <div class="status-row">
-                    <span class="set-badge">SETS: <span id="p1-sets">0</span></span>
-                    <span id="p1-foul-badge" class="foul-badge"></span>
-                </div>
+    <div id="predictive-overlay-panel" class="predictive-panel hidden">
+        <div class="matrix-title">⚔️ METAGAME MATCHUP MATRIX</div>
+        <div class="matrix-grid-data">
+            <div class="matrix-card p1-matrix">
+                <span class="matrix-team">P1 ADVANTAGE</span>
+                <div id="p1-prob-display" class="percentage-readout">50%</div>
+            </div>
+            <div class="matrix-center-vs">VS</div>
+            <div class="matrix-card p2-matrix">
+                <span class="matrix-team">P2 ADVANTAGE</span>
+                <div id="p2-prob-display" class="percentage-readout">50%</div>
+            </div>
+        </div>
+        <div id="matrix-tactical-tip" class="matrix-tip">Awaiting strategy calculation...</div>
+    </div>
+
+    <main class="arena-layout">
+        <!-- PLAYER 1 STATION -->
+        <section class="player-station p1" id="player-card-1">
+            <div class="station-header">
+                <input type="text" class="blader-name-input" id="p1-name" value="Player 1" spellcheck="false">
+                <span class="foul-badge" id="p1-foul-badge"></span>
             </div>
             
-            <div class="score-display" id="p1-display">0</div>
-            
-            <div class="deck-container">
-                <span class="deck-label">3-BEY DECK LINEUP</span>
-                <div class="deck-slot" id="p1-slot-0" data-active="true">
-                    <span class="slot-num">1</span>
-                    <div class="combo-badge flex-badge" id="p1-combo-0" onclick="openPartsModal(1, 0)">+ Select Bey 1</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(1, 0, -1)">▲</button><button onclick="shiftLineup(1, 0, 1)">▼</button></div>
+            <div class="telemetry-hub">
+                <div class="metric-block score">
+                    <span class="metric-label">CURRENT POINTS</span>
+                    <div class="counter-display" id="p1-display">0</div>
                 </div>
-                <div class="deck-slot" id="p1-slot-1">
-                    <span class="slot-num">2</span>
-                    <div class="combo-badge flex-badge" id="p1-combo-1" onclick="openPartsModal(1, 1)">+ Select Bey 2</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(1, 1, -1)">▲</button><button onclick="shiftLineup(1, 1, 1)">▼</button></div>
+                <div class="metric-block sets">
+                    <span class="metric-label">SETS WON</span>
+                    <div class="counter-display sets" id="p1-sets">0</div>
                 </div>
-                <div class="deck-slot" id="p1-slot-2">
-                    <span class="slot-num">3</span>
-                    <div class="combo-badge flex-badge" id="p1-combo-2" onclick="openPartsModal(1, 2)">+ Select Bey 3</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(1, 2, -1)">▲</button><button onclick="shiftLineup(1, 2, 1)">▼</button></div>
+            </div>
+
+            <div class="deck-registration">
+                <div class="deck-title">3-BEY DECK CONFIGURATION</div>
+                <div class="combo-lineup" id="p1-slot-0" onclick="openPartsModal(1, 0)">
+                    <div class="slot-marker">S1</div>
+                    <div class="combo-text" id="p1-combo-0">+ Select Bey 1</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(1, 0, 1)">▼</button></div>
+                </div>
+                <div class="combo-lineup" id="p1-slot-1" onclick="openPartsModal(1, 1)">
+                    <div class="slot-marker">S2</div>
+                    <div class="combo-text" id="p1-combo-1">+ Select Bey 2</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(1, 1, -1)">▲</button><button onclick="shiftLineup(1, 1, 1)">▼</button></div>
+                </div>
+                <div class="combo-lineup" id="p1-slot-2" onclick="openPartsModal(1, 2)">
+                    <div class="slot-marker">S3</div>
+                    <div class="combo-text" id="p1-combo-2">+ Select Bey 3</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(1, 2, -1)">▲</button></div>
                 </div>
             </div>
 
@@ -106,33 +127,70 @@
             </div>
         </section>
 
-        <section class="player-card" id="player-card-2">
-            <div class="card-header">
-                <input type="text" id="p2-name" class="name-input p2-accent" value="Player 2">
-                <div class="status-row">
-                    <span class="set-badge">SETS: <span id="p2-sets">0</span></span>
-                    <span id="p2-foul-badge" class="foul-badge"></span>
+        <!-- CENTER OPERATIONAL CONTROL HUB -->
+        <section class="control-tower">
+            <div class="tower-panel launch-system">
+                <button class="prime-launch-btn" onclick="startCountdown()">LAUNCH COUNTDOWN</button>
+            </div>
+
+            <div class="tower-panel setup-matrix">
+                <div class="matrix-header">MATCH CONFIGURATION</div>
+                <div class="config-row">
+                    <span>Points Target:</span>
+                    <div class="tuner-group">
+                        <button class="tune-btn" onclick="adjustPointsLimit(-1)">-</button>
+                        <span class="config-val" id="limit-display">4</span>
+                        <button class="tune-btn" onclick="adjustPointsLimit(1)">+</button>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <span>Sets Target:</span>
+                    <div class="tuner-group">
+                        <button class="tune-btn" onclick="adjustSetsLimit(-1)">-</button>
+                        <span class="config-val" id="sets-limit-display">2</span>
+                        <button class="tune-btn" onclick="adjustSetsLimit(1)">+</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="score-display" id="p2-display">0</div>
+            <button id="lock-lineup-btn" class="lock-deck-btn" onclick="toggleLineupLock()">🔒 LOCK LINEUPS</button>
+            <button class="full-reset-btn" id="arena-reset-btn" onclick="resetGame()">RESET FIELD AREA</button>
+        </section>
+
+        <!-- PLAYER 2 STATION -->
+        <section class="player-station p2" id="player-card-2">
+            <div class="station-header">
+                <input type="text" class="blader-name-input" id="p2-name" value="Player 2" spellcheck="false">
+                <span class="foul-badge" id="p2-foul-badge"></span>
+            </div>
             
-            <div class="deck-container">
-                <span class="deck-label">3-BEY DECK LINEUP</span>
-                <div class="deck-slot" id="p2-slot-0" data-active="true">
-                    <span class="slot-num">1</span>
-                    <div class="combo-badge flex-badge" id="p2-combo-0" onclick="openPartsModal(2, 0)">+ Select Bey 1</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(2, 0, -1)">▲</button><button onclick="shiftLineup(2, 0, 1)">▼</button></div>
+            <div class="telemetry-hub">
+                <div class="metric-block score">
+                    <span class="metric-label">CURRENT POINTS</span>
+                    <div class="counter-display" id="p2-display">0</div>
                 </div>
-                <div class="deck-slot" id="p2-slot-1">
-                    <span class="slot-num">2</span>
-                    <div class="combo-badge flex-badge" id="p2-combo-1" onclick="openPartsModal(2, 1)">+ Select Bey 2</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(2, 1, -1)">▲</button><button onclick="shiftLineup(2, 1, 1)">▼</button></div>
+                <div class="metric-block sets">
+                    <span class="metric-label">SETS WON</span>
+                    <div class="counter-display sets" id="p2-sets">0</div>
                 </div>
-                <div class="deck-slot" id="p2-slot-2">
-                    <span class="slot-num">3</span>
-                    <div class="combo-badge flex-badge" id="p2-combo-2" onclick="openPartsModal(2, 2)">+ Select Bey 3</div>
-                    <div class="slot-reorder"><button onclick="shiftLineup(2, 2, -1)">▲</button><button onclick="shiftLineup(2, 2, 1)">▼</button></div>
+            </div>
+
+            <div class="deck-registration">
+                <div class="deck-title">3-BEY DECK CONFIGURATION</div>
+                <div class="combo-lineup" id="p2-slot-0" onclick="openPartsModal(2, 0)">
+                    <div class="slot-marker">S1</div>
+                    <div class="combo-text" id="p2-combo-0">+ Select Bey 1</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(2, 0, 1)">▼</button></div>
+                </div>
+                <div class="combo-lineup" id="p2-slot-1" onclick="openPartsModal(2, 1)">
+                    <div class="slot-marker">S2</div>
+                    <div class="combo-text" id="p2-combo-1">+ Select Bey 2</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(2, 1, -1)">▲</button><button onclick="shiftLineup(2, 1, 1)">▼</button></div>
+                </div>
+                <div class="combo-lineup" id="p2-slot-2" onclick="openPartsModal(2, 2)">
+                    <div class="slot-marker">S3</div>
+                    <div class="combo-text" id="p2-combo-2">+ Select Bey 3</div>
+                    <div class="lineup-arranger" onclick="event.stopPropagation()"><button onclick="shiftLineup(2, 2, -1)">▲</button></div>
                 </div>
             </div>
 
@@ -156,7 +214,6 @@
         <div class="utility-controls">
             <button class="util-btn undo" onclick="undoLast()">Undo Step</button>
             <button class="util-btn swap" onclick="swapSides()">⇄ Swap Sides</button>
-            <button id="arena-reset-btn" class="util-btn reset" onclick="resetGame()">Reset Arena</button>
         </div>
     </footer>
 
