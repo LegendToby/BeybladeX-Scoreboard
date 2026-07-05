@@ -23,3 +23,8 @@ Keeping score in Beyblade X matches can get pretty chaotic because the games are
 *   **Step-by-Step Undo Loop:** Made a quick typo? Click "Undo Step" to roll the entire match state back seamlessly.
 
 ---
+
+##☕ Support the Project
+If this scoreboard helps you manage local brackets, test your custom deck arrays, or streamline battle sequences, consider throwing a coffee my way to help keep things running!
+
+Created by legendtoby. 3... 2... 1... Go Shoot!
