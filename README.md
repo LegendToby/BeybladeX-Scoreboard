@@ -29,6 +29,7 @@ If this scoreboard helps you manage local brackets, test your custom deck arrays
 
 Created by legendtoby. 3... 2... 1... Go Shoot!
 
-[![Buy Me A Coffee](https://shields.io)](https://buymeacoffee.com/legendtoby)
+[![Buy Me A Coffee](https://buymeacoffee.com)](https://buymeacoffee.com/legendtoby)
+
 
 
