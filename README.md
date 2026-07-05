@@ -1,28 +1,25 @@
-# BeybladeX-Scoreboard
-⚔️ Beyblade X Scoreboard & Matchup Analyzer
-A simple, fast web scoreboard built for competitive Beyblade X (including UX and CX Custom Lines). It tracks points, registers your 3-Bey decks, and calculates matchup type-advantages when you lock in your choices.
+# ⚔️ Beyblade X Scoreboard & Matchup Analyzer
 
-I designed it to run flawlessly on phones and tablets at your local tournament or casual meetups without any background lag.
+A fast, lightweight web scoreboard built specifically for competitive **Beyblade X** battles (including UX and CX Custom Lines). It tracks match points, manages your 3-Bey decks, and instantly calculates type-advantage percentages when you lock in your choices. 
 
-🤔 Why I Built This
-Keeping score in Beyblade X matches can get pretty chaotic because the games are lightning-fast. Traditional tracking tools just didn't cut it, especially with the 3-Bey deck rule and the complex customizable CX parts coming from Takara Tomy.
+I designed this to run flawlessly on phones and tablets during local tournaments or casual meetups without any of the background animation lag found in other tracking apps.
 
-✨ Key Features
-Official Scoring Formats: Tap to add score variables for Spin Finishes (+1), Over/Burst Finishes (+2), and Xtreme Finishes (+3).
+---
 
-Automated Launch Foul Warning: Tracks double faults. First foul flags a warning badge, second foul automatically awards the opponent a penalty point.
+## 🤔 Why I Built This
 
-Full Takara Tomy Parts Registry: Sorted numerically and chronologically from early BX-01 starters right up to current premium UX and custom CX modular builds.
+Keeping score in Beyblade X matches can get pretty chaotic because the games are lightning-fast. Traditional tracking tools just didn't cut it—especially when trying to manage the 3-Bey deck rule or keep track of the complex, customizable CX parts coming from Takara Tomy. 
 
-Predictive Advantage Matrix Engine: Lock your lineups to instantly see a calculated win-probability readout based on pure archetype metrics (Attack vs. Stamina vs. Defense).
+---
 
-Launch Countdown Audio Sequence: Fires off an official battle trigger sound. No huge screen-blocking overlay numbers are displayed during the countdown to keep your visual field clean.
+## ✨ Key Features
 
-Instant Side Swapping (⇄ Swap Sides): Instantly swap positions, deck configurations, scores, and historical data logs for both bladers if you switch sides at the physical stadium arena.
+*   **Official Scoring Formats:** Tap to instantly add score variables for Spin Finishes (+1), Over/Burst Finishes (+2), and Xtreme Finishes (+3).
+*   **Automated Launch Foul Warning:** Tracks double faults automatically. The first foul flags a warning badge, while the second consecutive foul awards a penalty point to the opponent.
+*   **Full Takara Tomy Parts Registry:** Sorted numerically and chronologically from early BX-01 starters right up to premium UX and custom modular CX builds.
+*   **Predictive Advantage Matrix:** Lock your lineups to instantly see a calculated win-probability readout based on pure archetype metrics (Attack vs. Stamina vs. Defense).
+*   **Clean Launch Countdown:** Fires off an official acoustic battle trigger sound. No huge, screen-blocking overlay numbers are displayed during the countdown to keep your visual field clean.
+*   **Instant Side Swapping (`⇄ Swap Sides`):** Instantly swap positions, deck configurations, scores, and log entries if the bladers physically switch sides at the stadium.
+*   **Step-by-Step Undo Loop:** Made a quick typo? Click "Undo Step" to roll the entire match state back seamlessly.
 
-Step-by-Step Undo Loop: Made a typo? Click "Undo Step" to roll the entire match state back seamlessly.
-
-☕ Support the Project
-If this scoreboard helps you manage local brackets, test your custom deck arrays, or streamline battle sequences, a coffee helps keep things running!
-
-Created by legendtoby. 3... 2... 1... Go Shoot!
+---
