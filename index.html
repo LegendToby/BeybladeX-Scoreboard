@@ -17,9 +17,7 @@
                 <span class="dialog-icon">⚠️</span>
                 <h3 id="dialog-title">Arena Directive</h3>
             </div>
-            <div class="dialog-body" id="dialog-message">
-                Instruction text goes here.
-            </div>
+            <div class="dialog-body" id="dialog-message"></div>
             <div class="dialog-footer">
                 <button class="dialog-btn" onclick="closeInstructionDialog()">Acknowledge & Continue</button>
             </div>
@@ -31,8 +29,20 @@
             <span class="modal-title" id="modal-player-title">Select Player Combo</span>
             <button class="clear-btn-top" onclick="clearPartsSelection()">Clear Slot</button>
         </div>
+
+        <div class="combo-manager-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="section-micro-label" id="vault-count-label" style="margin-bottom: 0;">📋 Custom Blueprint Vault (0/20)</label>
+                <button class="meta-sync-trigger-btn" id="sync-button" onclick="triggerLiveMetaSynchronization()">🔄 Sync Live Meta</button>
+            </div>
+            <div class="quick-pick-grid" id="meta-presets-grid">
+                </div>
+        </div>
+        
+        <hr class="modal-divider">
+
         <div class="form-group">
-            <label for="select-system">Blade System Architecture</label>
+            <label for="select-system">Custom Blade System Architecture</label>
             <select id="select-system" onchange="handleSystemChange()">
                 <option value="STANDARD">UX / BX Standard System</option>
                 <option value="CX_MODULAR">CX Modular Lock Architecture</option>
@@ -51,7 +61,11 @@
         </div>
 
         <div id="dynamic-ratchet-inputs"></div>
-        <button class="modal-confirm-btn" onclick="savePartsSelection()">Confirm Selection</button>
+        
+        <div class="modal-footer-actions" style="display: flex; gap: 8px; margin-top: 15px;">
+            <button class="modal-save-custom-btn" onclick="saveActiveComboToCustomManager()" type="button">💾 Save to Vault</button>
+            <button class="modal-confirm-btn" style="margin-top: 0; flex: 2;" onclick="savePartsSelection()">Confirm</button>
+        </div>
     </div>
 
     <header class="app-header">
@@ -127,30 +141,26 @@
         </section>
 
         <section class="control-tower">
-            <div class="tower-panel launch-system">
-                <button class="prime-launch-btn" onclick="startCountdown()">LAUNCH COUNTDOWN</button>
-            </div>
-
+            <div class="tower-panel launch-system"><button class="prime-launch-btn" onclick="startCountdown()">LAUNCH COUNTDOWN</button></div>
             <div class="tower-panel setup-matrix">
-                <div class="matrix-header">MATCH CONFIGURATION</div>
+                <div class="match-configuration">MATCH CONFIGURATION</div>
                 <div class="config-row">
                     <span>Points Target:</span>
                     <div class="tuner-group">
-                        <button class="tune-btn" onclick="adjustPointsLimit(-1)">-</button>
+                        <button class="tune-btn" onclick="adjustLimit('winLimit', -1, 1, 10, 'limit-display')">-</button>
                         <span class="config-val" id="limit-display">4</span>
-                        <button class="tune-btn" onclick="adjustPointsLimit(1)">+</button>
+                        <button class="tune-btn" onclick="adjustLimit('winLimit', 1, 1, 10, 'limit-display')">+</button>
                     </div>
                 </div>
                 <div class="config-row">
                     <span>Sets Target:</span>
                     <div class="tuner-group">
-                        <button class="tune-btn" onclick="adjustSetsLimit(-1)">-</button>
+                        <button class="tune-btn" onclick="adjustLimit('setsWinLimit', -1, 1, 5, 'sets-limit-display')">-</button>
                         <span class="config-val" id="sets-limit-display">2</span>
-                        <button class="tune-btn" onclick="adjustSetsLimit(1)">+</button>
+                        <button class="tune-btn" onclick="adjustLimit('setsWinLimit', 1, 1, 5, 'sets-limit-display')">+</button>
                     </div>
                 </div>
             </div>
-            
             <button id="lock-lineup-btn" class="lock-deck-btn" onclick="toggleLineupLock()">🔒 LOCK LINEUPS</button>
             <button class="full-reset-btn" id="arena-reset-btn" onclick="resetGame()">RESET FIELD AREA</button>
         </section>
@@ -203,7 +213,17 @@
 
     <footer class="bottom-panel">
         <div class="log-section">
-            <div class="terminal-header">LIVE STADIUM TELEMETRY LOG</div>
+            <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>LIVE STADIUM TELEMETRY LOG</span>
+                <div class="review-dropdown-container">
+                    <select id="review-strategy-mode" onchange="runTacticalMatchReview()">
+                        <option value="NONE">🔍 Choose After-Match Review...</option>
+                        <option value="COUNTER">⚔️ Counter-Pick Mind Games</option>
+                        <option value="LAUNCH">🚀 Launch Tilt & Rail Strategy</option>
+                        <option value="HARDWARE">📐 Mass & Ratchet Disadvantage</option>
+                    </select>
+                </div>
+            </div>
             <div id="history-log">
                 <div id="empty-log-msg">Waiting for match launch sequence. Let 'er rip!</div>
             </div>
