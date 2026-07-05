@@ -24,6 +24,22 @@ Keeping score in Beyblade X matches can get pretty chaotic because the games are
 
 ---
 
+## 🆕 What's New in the Latest Update!
+
+## 📋 Custom Blueprint Vault (Save Your Combos!)
+*   Personal Vault Storage: You can now save up to 20 of your favorite custom Beyblade setups right inside the app.
+
+*   Quick Selection: Once a combo is saved to your vault, you can instantly equip it to any slot with a single click, saving you from rebuilding it every time.
+
+*   Easy Management: Easily clear or delete old builds from your vault whenever you want to update your strategy.
+
+## 🔄 Live Meta Synchronization (Real-Time Pro Highlights)
+*   Live Meta Tracking: Added a "Sync Live Meta" feature that fetches current tournament statistics instantly.
+
+*   Pro Part Indicators: The app automatically flags top-tier, highly dominant parts with a special ★ Star Icon inside the selection menus, helping you see what's trending in the competitive scene.
+
+---
+
 ## ☕ Support the Project
 If this scoreboard helps you manage local brackets, test your custom deck arrays, or streamline battle sequences, consider throwing a coffee my way to help keep things running!
 
